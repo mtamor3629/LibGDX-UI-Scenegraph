@@ -1,0 +1,276 @@
+{
+	"textures": {
+		"earth1": {
+			"file":      "textures/earthtile1.png",
+            "wrapS":     "repeat",
+            "wrapT":     "repeat"
+		},
+        "earth2": {
+            "file":      "textures/earthtile2.png",
+            "wrapS":     "clamp",
+            "wrapT":     "clamp"
+        },
+        "cornell": {
+            "file":      "textures/cornell.png",
+            "minfilter": "linear",
+            "magfilter": "linear"
+        },
+        "redb": {
+            "file":      "textures/red.png",
+            "minfilter": "linear",
+            "magfilter": "linear"
+        },
+        "reds": {
+            "file":      "textures/red-small.png",
+            "minfilter": "linear",
+            "magfilter": "linear",
+            "wrapS":     "clamp",
+            "wrapT":     "clamp"
+        },
+        "play": {
+            "file":      "textures/play.png",
+            "wrapS":     "clamp",
+            "wrapT":     "clamp",
+            "minfilter": "linear",
+            "magfilter": "linear"
+        }
+	},
+	"fonts": {
+		"felt": {
+			"file":     "fonts/MarkerFelt.ttf",
+			"size":     64
+		},
+        "sans": {
+            "file":     "fonts/Roboto-Bold.ttf",
+            "size":     64
+        }
+	},
+    "widgets": {
+        "largebutton" : "widgets/largebutton.json",
+        "smallbutton" : "widgets/smallbutton.json"
+    },
+    "scene2s": {
+        "button" : {
+            "comment"   : "The scene graph definition for the NinePatch button.  Noted the nested layouts.",
+            "type"      : "Node",
+            "format" : {
+                "type" : "Anchored"
+            },
+            "children"  : {
+                 "action"  : {
+                    "type"   : "Widget",
+                    "data"   : {
+                        "key" : "largebutton",
+                        "variables" : {
+                            "size"  : [550,300],
+                            "text"  : "Click Count is 0"
+                        }
+                    }
+                }
+            }
+        },
+        "slider" : {
+            "comment"   : "The scene graph definition for the slider demo",
+            "type"      : "Node",
+            "format"    : {
+                "type" : "Anchored"
+            },
+            "children"  : {
+                "action"  : {
+                    "type"   : "Slider",
+                    "data"   : {
+                        "bounds" : [0,40,800,100],
+                        "range"  : [20,400],
+                        "value"  : 200,
+                        "tick"   : 40,
+                        "snap"   : true,
+                        "anchor" : [0.5,0.5]
+                    },
+                    "layout" : {
+                        "x_anchor" : "center",
+                        "y_anchor" : "middle"
+                    }
+                },
+                "label" : {
+                    "type"   : "Label",
+                    "data"   : {
+                        "font"       : "sans",
+                        "text"       : "Slider value is 0.0",
+                        "foreground" : [255,255,255,255],
+                        "size"       : [600,70],
+                        "valign"     : "middle",
+                        "halign"     : "center",
+                        "anchor"     : [0.5,0.5]
+                    },
+                    "layout" : {
+                        "x_anchor" : "center",
+                        "y_anchor" : "bottom",
+                        "y_offset" : 0.2
+                    }
+                }
+            }
+        },
+        "textfield" : {
+            "comment"   : "The scene graph definition for the text field demo",
+            "type"      : "Node",
+            "format"    : {
+                "type" : "Anchored"
+            },
+            "children"  : {
+                "action"  : {
+                    "type"   : "TextField",
+                    "data"   : {
+                        "font"       : "sans",
+                        "text"       : "Edit me",
+                        "foreground" : [255,255,255,255],
+                        "background" : [0,0,0,255],
+                        "size"       : [600,80],
+                        "anchor"     : [0.5,0.5]
+                    },
+                    "layout" : {
+                        "x_anchor" : "center",
+                        "y_anchor" : "top",
+                        "y_offset" : -0.3
+                    }
+                },
+                "result"  : {
+                    "type"   : "Label",
+                    "data"   : {
+                        "font"       : "sans",
+                        "text"       : "Result:",
+                        "foreground" : [0,0,0,255],
+                        "size"       : [700,80],
+                        "anchor"     : [0.5,0.5]
+                    },
+                    "layout" : {
+                        "x_anchor" : "center",
+                        "y_anchor" : "bottom",
+                        "y_offset" : 0.3
+                    }
+                }
+            }
+        },
+        "manager" : {
+            "comment"   : "A scene graph of buttons to demo a layout manager",
+            "type"      : "Node",
+            "format"    : {
+                "type"        : "Float",
+                "orientation" : "horizontal",
+                "x_alignment" : "right",
+                "y_alignment" : "top"
+            },
+            "children"  : {
+                "button1" : {
+                    "type"  : "Widget",
+                    "data"  : {
+                        "key"   : "smallbutton",
+                        "variables" : {
+                            "size"  : [200,200],
+                            "text"  : "1",
+                            "priority" : 0
+                        }
+                    }
+                },
+                "button2" : {
+                    "type"  : "Widget",
+                    "data"  : {
+                        "key"   : "smallbutton",
+                        "variables" : {
+                            "size"  : [150,150],
+                            "text"  : "2",
+                            "priority" : 1
+                        }
+                    }
+                },
+                "button3" : {
+                    "type"  : "Widget",
+                    "data"  : {
+                        "key"   : "smallbutton",
+                        "variables" : {
+                            "size"  : [100,100],
+                            "text"  : "3",
+                            "priority" : 2
+                        }
+                    }
+                },
+                "button4" : {
+                    "type"  : "Widget",
+                    "data"  : {
+                        "key"   : "smallbutton",
+                        "variables" : {
+                            "size"  : [150,150],
+                            "text"  : "4",
+                            "priority" : 3
+                        }
+                    }
+                },
+                "button5" : {
+                    "type"  : "Widget",
+                    "data"  : {
+                        "key"   : "smallbutton",
+                        "variables" : {
+                            "size"  : [200,200],
+                            "text"  : "5",
+                            "priority" : 4
+                        }
+                    }
+                },
+                 "button6" : {
+                    "type"  : "Widget",
+                    "data"  : {
+                        "key"   : "smallbutton",
+                        "variables" : {
+                            "size"  : [150,150],
+                            "text"  : "6",
+                            "priority" : 5
+                        }
+                    }
+                },
+                "button7" : {
+                    "type"  : "Widget",
+                    "data"  : {
+                        "key"   : "smallbutton",
+                        "variables" : {
+                            "size"  : [100,100],
+                            "text"  : "7",
+                            "priority" : 6
+                        }
+                    }
+                },
+                "button8" : {
+                    "type"  : "Widget",
+                    "data"  : {
+                        "key"   : "smallbutton",
+                        "variables" : {
+                            "size"  : [150,150],
+                            "text"  : "8",
+                            "priority" : 7
+                        }
+                    }
+                },
+                "button9" : {
+                    "type"  : "Widget",
+                    "data"  : {
+                        "key"   : "smallbutton",
+                        "variables" : {
+                            "size"  : [200,200],
+                            "text"  : "9",
+                            "priority" : 8
+                        }
+                    }
+                },
+                "button10" : {
+                    "type"  : "Widget",
+                    "data"  : {
+                        "key"   : "smallbutton",
+                        "variables" : {
+                            "size"  : [150,150],
+                            "text"  : "10",
+                            "priority" : 9
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
