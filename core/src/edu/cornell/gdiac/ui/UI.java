@@ -9,11 +9,11 @@
 
 package edu.cornell.gdiac.ui;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Tree;
-import com.badlogic.gdx.scenes.scene2d.ui.Widget;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -24,9 +24,14 @@ public class UI {
         //TODO: Parse the skin
         Skin skin = new Skin();
         //Tree tree = new Tree(skin);
-        Button b = new Button();
-        b.setStyle(new Text);
-        stage.addActor(b);
+        Image img = new Image(new Texture(Gdx.files.internal("badlogic.jpg")));
+        //img.setOrigin(435f,135f);
+        img.setPosition(1f,1f);
+        //img.setPosition(0,0);
+        img.setRotation(30);
+        //stage.addActor(tree);
+        //tree.addActor(img);
+        stage.addActor(img);
 /*
         JsonValue sceneGraph = json.get("scene2s");
         if(sceneGraph==null||sceneGraph.isEmpty())
