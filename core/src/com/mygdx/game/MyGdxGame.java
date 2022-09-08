@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ScreenUtils;
-import edu.cornell.gdiac.ui.UI;
+import edu.cornell.gdiac.ui.Scene2Loader;
 
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
@@ -20,7 +20,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create () {
 		JsonReader reader = new JsonReader();
 		JsonValue json = reader.parse(Gdx.files.internal("assets.json"));
-		stage = UI.genSceneGraph(json);
+		stage.addActor(Scene2Loader.genSceneGraph(json));
 	}
 
 	@Override
