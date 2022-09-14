@@ -41,21 +41,6 @@
                         "y_anchor" : "fill"
                     }
                 },
-				"label" : {
-					"type" : "Label",
-					"data": {
-						"font"       : "gyparody",
-						"text"       : "Click Me",
-						"foreground" : [255,255,255,255],
-						"anchor"     : [0.5, 0.5],
-						"halign"     : "center",
-						"valign"     : "middle"
-					},
-					"layout" : {
-						"x_anchor" : "fill",
-						"y_anchor" : "fill"
-					}
-				},
                 "startmenu": {
 					"type": "Image",
 					"format"    : {

@@ -9,18 +9,27 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ScreenUtils;
 import edu.cornell.gdiac.ui.Scene2Loader;
+import edu.cornell.gdiac.ui.assets.AssetDirectory;
+//import com.badlogic.gdx.graphics.g2d.Free
 
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture img;
 
+	AssetDirectory assets;
+
 	Stage stage;
 	
 	@Override
 	public void create () {
+		this.assets = new AssetDirectory("assets.json");
+		assets.loadAssets();
+		assets.finishLoading();
 		JsonReader reader = new JsonReader();
 		JsonValue json = reader.parse(Gdx.files.internal("assets.json"));
-		stage.addActor(Scene2Loader.genSceneGraph(json));
+		stage = new Stage();
+		stage.addActor(Scene2Loader.genSceneGraph(json,assets));
+		Gdx.input.setInputProcessor(stage);
 	}
 
 	@Override
@@ -28,12 +37,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		ScreenUtils.clear(1, 1, 1, 1);
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
+		//if(stage.)
 	}
 	
 	@Override
 	public void dispose () {
 		batch.dispose();
+		assets.dispose();
 		img.dispose();
+		stage.dispose();
 	}
 
 	@Override
