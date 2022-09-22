@@ -20,8 +20,10 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
+import edu.cornell.gdiac.ui.widgets.AnchoredLayout;
 
 /**
  * This class provides functionality for parsing a JSON scenegraph specification, and generating the corresponding LibGDX scenegraph
@@ -32,7 +34,6 @@ public class Scene2Loader {
      */
 
     static AssetDirectory assetDirectory;
-
     public static Group genSceneGraph(JsonValue json, AssetDirectory assets,Stage s) {
         assetDirectory = assets;
         Group stage = new Group();
@@ -89,7 +90,16 @@ public class Scene2Loader {
         return table;
     }
 
-    @SuppressWarnings({})
+    public static Group genAltAltSceneGraph(AssetDirectory assets,Stage stage) {
+        AnchoredLayout layout = new AnchoredLayout();
+        Texture t = assets.getEntry("background",Texture.class);
+        Image i = new Image(t);
+        i.setSize(t.getWidth(),t.getHeight());
+        i.setOrigin(0,0.5f);
+
+        layout.addAnchoredActor(i,"left","fill",0,0);
+        return layout;
+    }
     public static Group genAltSceneGraph(AssetDirectory assets,Stage stage){
         Group g = new Group();
         g.setSize(stage.getWidth(),stage.getHeight());
