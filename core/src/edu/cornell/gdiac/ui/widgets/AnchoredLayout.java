@@ -14,11 +14,13 @@ public class AnchoredLayout extends WidgetGroup {
         public Actor actor;
         String xAnchor, yAnchor;
         float offsetX, offsetY;
+        boolean abs;
 
-        public AnchoredNode(Actor actor,String xAnchor, String yAnchor){
+        public AnchoredNode(Actor actor,String xAnchor, String yAnchor,boolean abs){
             this.actor = actor;
             this.xAnchor = xAnchor;
             this.yAnchor = yAnchor;
+            this.abs = abs;
         }
 
         public void setOffset(float x, float y){
@@ -26,7 +28,7 @@ public class AnchoredLayout extends WidgetGroup {
             this.offsetY = y;
         }
 
-        public Table getLayout(){
+        public Table getLayout(AnchoredLayout layout){
             if(table== null){
                 table = new Table();
             }
@@ -60,10 +62,16 @@ public class AnchoredLayout extends WidgetGroup {
                     cell.fillY();
                     break;
             }
-            float padLeft = offsetX>0?offsetX*getWidth():0;
-            float padRight = offsetX<0?-offsetX*getWidth():0;
-            float padTop = offsetY<0?-offsetY*getHeight():0;
-            float padBottom = offsetY>0?offsetY*getHeight():0;
+            float width = layout.getWidth();
+            float height = layout.getHeight();
+            if(abs){
+                width=1;
+                height=1;
+            }
+            float padLeft = offsetX>0?offsetX*width:0;
+            float padRight = offsetX<0?-offsetX*width:0;
+            float padTop = offsetY<0?-offsetY*height:0;
+            float padBottom = offsetY>0?offsetY*height:0;
             cell.pad(padTop,padLeft,padBottom,padRight);
             return table;
         }
@@ -73,20 +81,24 @@ public class AnchoredLayout extends WidgetGroup {
 
     public AnchoredLayout(){
         super();
-        anchors = new Array<AnchoredNode>();
+        anchors = new Array<>();
         this.setFillParent(true);
     }
-    public void addAnchoredActor(Actor actor, String xAnchor, String yAnchor, float xOffset, float yOffset){
-        AnchoredNode node = new AnchoredNode(actor,xAnchor,yAnchor);
+    public void addAnchoredActor(Actor actor, String xAnchor, String yAnchor, float xOffset, float yOffset, boolean abs){
+        AnchoredNode node = new AnchoredNode(actor,xAnchor,yAnchor,abs);
         node.setOffset(xOffset, yOffset);
         anchors.add(node);
+    }
+
+    @Override
+    public void addActor(Actor actor) {
     }
 
     @Override
     public void layout(){
         this.clearChildren();
         for(AnchoredNode node: anchors){
-           addActor(node.getLayout());
+           super.addActor(node.getLayout(this));
         }
     }
 }

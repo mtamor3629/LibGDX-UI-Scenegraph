@@ -91,7 +91,7 @@
 								"x_anchor" : "right",
 								"y_anchor" : "bottom",
 								"y_offset" : 0.1,
-								"x_offset" : 0.1
+								"x_offset" : -0.1
 							}
 						},
 						"button1": {

@@ -92,12 +92,13 @@ public class Scene2Loader {
 
     public static Group genAltAltSceneGraph(AssetDirectory assets,Stage stage) {
         AnchoredLayout layout = new AnchoredLayout();
+        //layout.setSize(stage.getWidth(), stage.getHeight());
         Texture t = assets.getEntry("background",Texture.class);
         Image i = new Image(t);
         i.setSize(t.getWidth(),t.getHeight());
         i.setOrigin(0,0.5f);
 
-        layout.addAnchoredActor(i,"left","fill",0,0);
+        layout.addAnchoredActor(i,"left","fill",0,0,false);
         return layout;
     }
     public static Group genAltSceneGraph(AssetDirectory assets,Stage stage){
@@ -173,7 +174,6 @@ public class Scene2Loader {
 
     private static Actor parseNode(JsonValue actor,Group parent,float scaleX,float scaleY){
         String name = ((parent==null)?"":(parent.getName()+"."))+actor.name;
-        System.out.println(name);
         String type = actor.getString("type");
         String comment = actor.getString("comment", null);
         JsonValue format = actor.get("format");
@@ -182,6 +182,7 @@ public class Scene2Loader {
         JsonValue children = actor.get("children");
         boolean hasChild = false;
         boolean anchored = false;
+        AnchoredLayout anchoredLayout = null;
 
         if(children != null)
             hasChild = true;
@@ -190,7 +191,7 @@ public class Scene2Loader {
             String formatType = format.getString("type");
             switch (formatType) {
                 case "Anchored":
-                    anchored = true;
+                    anchoredLayout = new AnchoredLayout();
                     break;
                 case "Float":
                     String orientation = format.getString("orientation");
@@ -248,6 +249,7 @@ public class Scene2Loader {
                 }
                 break;
             case "TextButton":
+                System.out.println("TextButton");
                 TextButton.TextButtonStyle tStyle = new ImageTextButton.ImageTextButtonStyle();
                 Actor tUp = parseNode(children.get(data.getString("upnode")), (Group)node ,scaleX,scaleY);
                 children.remove(data.getString("upnode"));
@@ -302,231 +304,36 @@ public class Scene2Loader {
             Group g = new Group();
             g.addActor(node);
             g.setSize(node.getWidth(), node.getHeight());
+            System.out.println(name+": "+g.getWidth());
             node = g;
         }
 
+        if(anchoredLayout!=null){
+            ((Group)node).addActor(anchoredLayout);
+            anchoredLayout.setSize(node.getWidth(),node.getHeight());
+        }
+
         if(hasChild) {
-            for (JsonValue child : children) {
-                ((Group) node).addActor((parseNode(child, (Group) node,scaleX,scaleY)));
+            if(anchoredLayout!=null){
+                for (JsonValue child : children) {
+                    parseNode(child, anchoredLayout, scaleX, scaleY);
+                }
+            }
+            else {
+                for (JsonValue child : children) {
+                    ((Group) node).addActor((parseNode(child, (Group) node, scaleX, scaleY)));
+                }
             }
         }
 
-        if (layout!=null && layout.has("x_anchor")) {
+        if (layout!=null && layout.has("x_anchor") && parent instanceof AnchoredLayout) {
             boolean abs = layout.getBoolean("absolute",false);
             float xOffset = layout.getFloat("x_offset",0f);
             float yOffset = layout.getFloat("y_offset",0f);
-            if(!abs && parent != null){
-                xOffset*=parent.getWidth();
-                yOffset*=parent.getHeight();
-            }
-            return capsuleToAnchor(node,layout.getString("x_anchor"),layout.getString("y_anchor"),xOffset,yOffset);
+            ((AnchoredLayout) parent).addAnchoredActor(node,layout.getString("x_anchor"),layout.getString("y_anchor"),xOffset,yOffset,abs);
         }
 
         return node;
 
-    }
-
-    /**
-     * Parse a node of the scenegraph, inherit properties from its parent.
-     *
-     * @param actor  the JsonValue to be parsed
-     * @param parent the parent node of this graph, or null if the node is the root;
-     */
-
-    private static Actor parseNodeOld(JsonValue actor, Group parent) {
-        Actor node = new Actor();
-        String name = ((parent==null)?"":(parent.getName()+"."))+actor.name;
-        System.out.println(name);
-        String type = actor.getString("type");
-        String comment = actor.getString("comment", null);
-        JsonValue format = actor.get("format");
-        JsonValue data = actor.get("data");
-        JsonValue layout = actor.get("layout");
-        JsonValue children = actor.get("children");
-
-
-        if(actor.name.equals("button1"))
-            return new Actor();
-
-        if (children != null) {
-            node = new Group();
-            node.setName(name);
-        }
-
-        switch (type) {
-            case "Node":
-            case "NinePatch":
-                break;
-            case "Image":
-                Texture t = assetDirectory.getEntry(data.getString("texture"), Texture.class);
-                node = new Image(t);
-                break;
-            case "Label":
-                Label.LabelStyle lStyle = new Label.LabelStyle();
-                lStyle.font = assetDirectory.getEntry(data.getString("font"), BitmapFont.class);
-                JsonValue color = data.get("foreground");
-                if(color!=null)
-                    lStyle.fontColor = new Color(color.getInt(0),color.getInt(1),color.getInt(2),color.getInt(3));
-                node = new Label(data.getString("text"),lStyle);
-                break;
-            case "Button":
-                Button.ButtonStyle bStyle = new Button.ButtonStyle();
-                Actor upnode = parseNode(children.get(data.getString("upnode")),(Group)node, node.getScaleX(),node.getScaleY());
-                children.remove(data.getString("upnode"));
-                if(upnode instanceof Image) {
-                    Skin skin = new Skin();
-                    bStyle.up = ((Image) upnode).getDrawable();
-                    bStyle.down = skin.newDrawable(bStyle.up,0.7f,0.7f,0.7f,1);
-                    skin.dispose();
-                }
-                node = new Button(bStyle);
-
-                break;
-            case "TextButton":
-                //node = new TextButton();
-                break;
-            case "ImageButton":
-                //node = new ImageButton();
-                break;
-            case "CheckBox":
-                //node = new CheckBox();
-                break;
-            case "ButtonGroup":
-                //node = new ButtonGroup<Button>();
-                break;
-            case "TextField":
-                //node = new TextField();
-                break;
-            case "TextArea":
-                //node = new TextArea();
-                break;
-            case "List":
-                //node = new List<>();
-                break;
-            case "SelectBox":
-                //node = new SelectBox<>();
-                break;
-            case "ProgressBar":
-                //node = new ProgressBar();
-                break;
-            case "Slider":
-                //node = new Slider();
-                break;
-            case "Window":
-                //node = new Window();
-                break;
-            case "Touchpad":
-                //node = new Touchpad();
-                break;
-            case "Dialog":
-                //node = new Dialog();
-                break;
-            default:
-                throw new IllegalArgumentException("Undefined Type: " + type);
-        }
-
-
-
-        //TODO: finish format stuff
-        if (format != null) {
-            String formatType = format.getString("type");
-            switch (formatType) {
-                case "Anchored":
-
-                    if(!(node instanceof Group)){
-                        Group group = new Group();
-                        group.addActor(node);
-                        node = group;
-                    }
-
-                    node = new Group();
-                    break;
-                case "Float":
-                    String orientation = format.getString("orientation");
-                    String xAlign = format.getString("x_alignment");
-                    String yAlign = format.getString("y_alignment");
-                    break;
-                case "Grid":
-                    int width = format.getInt("width");
-                    int height = format.getInt("Height");
-                    break;
-                default:
-                    throw new IllegalArgumentException("Layout type Undefined");
-            }
-        }
-
-        node.setName(name);
-
-
-        if (layout != null) {
-            if (layout.has("priority")) {
-                int priority = layout.getInt("priority");
-            } else if (layout.has("x_index")) {
-                int x_index = layout.getInt("x_index");
-                int y_index = layout.getInt("y_index");
-                String xAnchor = format.getString("x_anchor");
-                String yAnchor = format.getString("y_anchor");
-            } else if (layout.has("x_anchor")) {
-
-                Table t = new Table();
-                t.add(node);
-                t.setFillParent(true);
-                String xAnchor = layout.getString("x_anchor");
-                String yAnchor = layout.getString("y_anchor");
-                if(yAnchor.equals("center"))
-                    t.center();
-                else if(xAnchor.equals("center"))
-                    t.center();
-
-                if(xAnchor.equals("left"))
-                    t.left();
-                else if(xAnchor.equals("right"))
-                    t.right();
-                else if (xAnchor.equals("fill"))
-                    t.getCell(node).fillX();
-                if(yAnchor.equals("top"))
-                    t.top();
-                else if(yAnchor.equals("bottom"))
-                    t.bottom();
-                else if (yAnchor.equals("fill"))
-                    t.getCell(node).fillY();
-            }
-        }
-
-
-        //TODO: finish data stuff
-        if (data != null) {
-            JsonValue jsPos = data.get("bounds");
-            if (jsPos != null) {
-                node.setPosition(jsPos.getFloat(0), jsPos.getFloat(1));
-            }
-            JsonValue jsSize = data.get("size");
-            if (jsSize != null) {
-                node.setSize(jsSize.getFloat(0), jsSize.getFloat(1));
-            }
-            JsonValue jsAnchor = data.get("anchor");
-            if (jsAnchor != null) {
-                node.setOrigin(jsAnchor.getFloat(0), jsAnchor.getFloat(1));
-            }
-            JsonValue jsScale = data.get("scale");
-            if (jsScale != null) {
-                if (jsScale.size < 2)
-                    node.setScale(jsScale.asFloat());
-                else
-                    node.setScale(jsScale.getFloat(0), jsScale.getFloat(1));
-            }
-            if (data.has("angle"))
-                node.setRotation(data.getFloat("angle"));
-            if (data.has("visible"))
-                node.setVisible(data.getBoolean("visible"));
-        }
-
-        if(children != null && node instanceof Group) {
-            for (JsonValue child : children) {
-               // ((Group)node).addActor((parseNode(child, (Group) node)));
-            }
-        }
-
-        return node;
     }
 }
