@@ -1,0 +1,47 @@
+{
+	"textures": {
+		"background": {
+            "file":   "textures/background.png"
+        },
+        "menuboard": {
+            "file":  "textures/menu.png"
+        },
+        "menubutton": {
+            "file":  "textures/button.png"
+        },
+        "left": {
+            "file":   "textures/left_arrow.png"
+        },
+        "right": {
+            "file":   "textures/right_arrow.png"
+        }
+	},
+	"fonts": {
+		"gyparody": {
+			"file":     "fonts/gyparody-hv.ttf",
+			"size":     48
+		}
+	},
+    "scene2s" : {
+        "lab": {
+            "type"      : "Node",
+            "comment"   : "This is the root node of the scene for the lab",
+            "format"    : {
+                "type" : "Anchored"
+            },
+            "children":  {
+                "backdrop": {
+                    "type": "Image",
+                    "data": {
+                        "texture":  "background",
+                        "anchor":   [0.0,0.5]
+                    },
+                    "layout" : {
+                        "x_anchor" : "left",
+                        "y_anchor" : "fill"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,269 @@
+{
+  "textures": {
+    "background": {
+      "file":   "textures/background.png"
+    },
+    "menuboard": {
+      "file":  "textures/menu.png"
+    },
+    "menubutton": {
+      "file":  "textures/button.png"
+    },
+    "left": {
+      "file":   "textures/left_arrow.png"
+    },
+    "right": {
+      "file":   "textures/right_arrow.png"
+    }
+  },
+  "fonts": {
+    "gyparody": {
+      "file":     "fonts/gyparody-hv.ttf",
+      "size":     48
+    }
+  },
+  "scene2s" : {
+    "lab": {
+      "type"      : "Node",
+      "comment"   : "This is the root node of the scene for the lab",
+      "format"    : {
+        "type" : "Anchored"
+      },
+      "children":  {
+        "backdrop": {
+          "type": "Image",
+          "data": {
+            "texture":  "background",
+            "anchor":   [0.0,0.5]
+          },
+          "layout" : {
+            "x_anchor" : "left",
+            "y_anchor" : "fill"
+          }
+        },
+        "startmenu": {
+          "type": "Image",
+          "format"    : {
+            "type" : "Float",
+            "orientation": "vertical",
+            "x_alignment": "left",
+            "y_alignment": "top"
+          },
+          "data": {
+            "texture":  "menuboard",
+            "anchor":   [0.5,1.0],
+            "scale":    0.8
+          },
+          "children":  {
+            "left": {
+              "type": "Button",
+              "data": {
+                "upnode": "up",
+                "anchor": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "children": {
+                "up": {
+                  "type": "Image",
+                  "data": {
+                    "texture": "left"
+                  }
+                }
+              },
+              "layout": {
+                "x_anchor": "left",
+                "y_anchor": "bottom",
+                "y_offset": 0.1,
+                "x_offset": 0.1,
+                "priority": 0
+              }
+            },
+            "left2": {
+              "type": "Button",
+              "data": {
+                "upnode": "up",
+                "anchor": [
+                  0.0,
+                  0.0
+                ],
+                "scale": 3
+              },
+              "children": {
+                "up": {
+                  "type": "Image",
+                  "data": {
+                    "texture": "left"
+                  }
+                }
+              },
+              "layout": {
+                "x_anchor": "left",
+                "y_anchor": "bottom",
+                "y_offset": 0.1,
+                "x_offset": 0.1,
+                "priority": 1
+              }
+            },
+            "left4": {
+              "type": "Button",
+              "data": {
+                "upnode": "up",
+                "anchor": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "children": {
+                "up": {
+                  "type": "Image",
+                  "data": {
+                    "texture": "left"
+                  }
+                }
+              },
+              "layout": {
+                "x_anchor": "left",
+                "y_anchor": "bottom",
+                "y_offset": 0.1,
+                "x_offset": 0.1,
+                "priority": 10
+              }
+            },
+            "left5": {
+              "type": "Button",
+              "data": {
+                "upnode": "up",
+                "anchor": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "children": {
+                "up": {
+                  "type": "Image",
+                  "data": {
+                    "texture": "left"
+                  }
+                }
+              },
+              "layout": {
+                "x_anchor": "left",
+                "y_anchor": "bottom",
+                "y_offset": 0.1,
+                "x_offset": 0.1,
+                "priority": 11
+              }
+            },
+            "left6": {
+              "type": "Button",
+              "data": {
+                "upnode": "up",
+                "anchor": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "children": {
+                "up": {
+                  "type": "Image",
+                  "data": {
+                    "texture": "left"
+                  }
+                }
+              },
+              "layout": {
+                "x_anchor": "left",
+                "y_anchor": "bottom",
+                "y_offset": 0.1,
+                "x_offset": 0.1,
+                "priority": 12
+              }
+            },
+            "left3": {
+              "type": "Button",
+              "data": {
+                "upnode": "up",
+                "anchor": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "children": {
+                "up": {
+                  "type": "Image",
+                  "data": {
+                    "texture": "left"
+                  }
+                }
+              },
+              "layout": {
+                "x_anchor": "left",
+                "y_anchor": "bottom",
+                "y_offset": 0.1,
+                "x_offset": 0.1,
+                "priority": 2
+              }
+            },
+            "right": {
+              "type"   : "Button",
+              "data"   : {
+                "upnode"  : "up",
+                "anchor":   [1.0,0.0]
+              },
+              "children": {
+                "up" : {
+                  "type": "Image",
+                  "data": {
+                    "texture":  "right"
+                  }
+                }
+              },
+              "layout" : {
+                "x_anchor" : "right",
+                "y_anchor" : "bottom",
+                "y_offset" : 0.1,
+                "x_offset" : -0.1,
+                "priority": 2
+              }
+            },
+            "button1": {
+              "type"   : "TextButton",
+              "format" : {
+                "type" : "Anchored"
+              },
+              "data"   : {
+                "upnode"  : "up",
+                "anchor"  : [0.5,0.5],
+                "size"    : [300, 75],
+                "text"	  : "Click Me",
+                "font"    : "gyparody",
+                "foreground" : [255,255,255,255]
+              },
+              "children": {
+                "up" : {
+                  "type" : "NinePatch",
+                  "data": {
+                    "texture":  "menubutton",
+                    "anchor"   : [0.5, 0.5],
+                    "interior" : [33,40,62,55]
+                  }
+                }
+              },
+              "layout" : {
+                "x_anchor" : "center",
+                "y_anchor" : "middle",
+                "priority": 3
+              }
+            }
+          },
+          "layout" : {
+            "x_anchor" : "center",
+            "y_anchor" : "top"
+          }
+        }
+      }
+    }
+  }
+}

@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
 import edu.cornell.gdiac.ui.widgets.AnchoredLayout;
+import edu.cornell.gdiac.ui.widgets.FloatLayout;
 
 /**
  * This class provides functionality for parsing a JSON scenegraph specification, and generating the corresponding LibGDX scenegraph
@@ -182,7 +183,7 @@ public class Scene2Loader {
         JsonValue children = actor.get("children");
         boolean hasChild = false;
         boolean anchored = false;
-        AnchoredLayout anchoredLayout = null;
+        WidgetGroup layoutWidget = null;
 
         if(children != null)
             hasChild = true;
@@ -191,12 +192,13 @@ public class Scene2Loader {
             String formatType = format.getString("type");
             switch (formatType) {
                 case "Anchored":
-                    anchoredLayout = new AnchoredLayout();
+                    layoutWidget = new AnchoredLayout();
                     break;
                 case "Float":
                     String orientation = format.getString("orientation");
                     String xAlign = format.getString("x_alignment");
                     String yAlign = format.getString("y_alignment");
+                    layoutWidget = new FloatLayout(orientation,xAlign,yAlign);
                     break;
                 case "Grid":
                     int width = format.getInt("width");
@@ -249,7 +251,6 @@ public class Scene2Loader {
                 }
                 break;
             case "TextButton":
-                System.out.println("TextButton");
                 TextButton.TextButtonStyle tStyle = new ImageTextButton.ImageTextButtonStyle();
                 Actor tUp = parseNode(children.get(data.getString("upnode")), (Group)node ,scaleX,scaleY);
                 children.remove(data.getString("upnode"));
@@ -283,12 +284,12 @@ public class Scene2Loader {
             JsonValue jsScale = data.get("scale");
             if (jsScale != null) {
                 if (jsScale.size < 2) {
-                    scaleY = jsScale.asFloat();
-                    scaleX = jsScale.asFloat();
+                    scaleY *= jsScale.asFloat();
+                    scaleX *= jsScale.asFloat();
                 }
                 else{
-                    scaleY=jsScale.getFloat(0);
-                    scaleX = jsScale.getFloat(1);
+                    scaleY *= jsScale.getFloat(0);
+                    scaleX *= jsScale.getFloat(1);
                 }
 
             }
@@ -304,19 +305,18 @@ public class Scene2Loader {
             Group g = new Group();
             g.addActor(node);
             g.setSize(node.getWidth(), node.getHeight());
-            System.out.println(name+": "+g.getWidth());
             node = g;
         }
 
-        if(anchoredLayout!=null){
-            ((Group)node).addActor(anchoredLayout);
-            anchoredLayout.setSize(node.getWidth(),node.getHeight());
+        if(layoutWidget!=null){
+            ((Group)node).addActor(layoutWidget);
+            layoutWidget.setSize(node.getWidth(),node.getHeight());
         }
 
         if(hasChild) {
-            if(anchoredLayout!=null){
+            if(layoutWidget!=null){
                 for (JsonValue child : children) {
-                    parseNode(child, anchoredLayout, scaleX, scaleY);
+                    parseNode(child, layoutWidget, scaleX, scaleY);
                 }
             }
             else {
@@ -331,6 +331,9 @@ public class Scene2Loader {
             float xOffset = layout.getFloat("x_offset",0f);
             float yOffset = layout.getFloat("y_offset",0f);
             ((AnchoredLayout) parent).addAnchoredActor(node,layout.getString("x_anchor"),layout.getString("y_anchor"),xOffset,yOffset,abs);
+        }
+        else if (layout!=null && layout.has("priority") && parent instanceof FloatLayout){
+            ((FloatLayout) parent).addFloatActor(node,layout.getInt("priority"));
         }
 
         return node;
