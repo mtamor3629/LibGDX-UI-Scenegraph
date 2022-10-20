@@ -21,10 +21,15 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
 import edu.cornell.gdiac.ui.widgets.AnchoredLayout;
+import edu.cornell.gdiac.ui.widgets.CustomWidget;
 import edu.cornell.gdiac.ui.widgets.FloatLayout;
+import edu.cornell.gdiac.ui.widgets.GridLayout;
+
+import java.util.HashMap;
 
 /**
  * This class provides functionality for parsing a JSON scenegraph specification, and generating the corresponding LibGDX scenegraph
@@ -35,24 +40,31 @@ public class Scene2Loader {
      */
 
     static AssetDirectory assetDirectory;
+    static HashMap<String, CustomWidget> widgetList = new HashMap<>();
     public static Group genSceneGraph(JsonValue json, AssetDirectory assets,Stage s) {
         assetDirectory = assets;
         Group stage = new Group();
         stage.setSize(s.getWidth(),s.getHeight());
-        //TODO: Parse the skin etc
-        Skin skin = new Skin();
-        //Image img = new Image(new Texture(Gdx.files.internal("badlogic.jpg")));
-        //img.setPosition(1f, 1f);
-        //img.setRotation(30);
-        //stage.addActor(img);
         JsonValue sceneGraph = json.get("scene2s");
         if (sceneGraph == null || sceneGraph.isEmpty())
             throw new IllegalArgumentException("corrupted json file, does not contain scene2s specs");
         //iterate through all the nodes
+        JsonValue widgets = json.get("widgets");
+        if (widgets != null)
+            loadWidgets(widgets);
         for (JsonValue actor : sceneGraph) {
             stage.addActor(parseNode(actor, stage,1,1));
         }
         return stage;
+    }
+
+    public static void loadWidgets(JsonValue widgets){
+        JsonReader reader = new JsonReader();
+        widgetList.clear();
+        for (JsonValue widget: widgets) {
+            JsonValue widgetFile = reader.parse(Gdx.files.internal(widget.asString()));
+            widgetList.put(widget.name, new CustomWidget(widgetFile));
+        }
     }
 
     public static Table capsuleToAnchor(Actor actor, String xAnchor, String yAnchor, float xOffset, float yOffset){
@@ -203,6 +215,7 @@ public class Scene2Loader {
                 case "Grid":
                     int width = format.getInt("width");
                     int height = format.getInt("Height");
+                    layoutWidget = new GridLayout(width,height);
                     break;
                 default:
                     throw new IllegalArgumentException("Layout type Undefined");
@@ -265,6 +278,8 @@ public class Scene2Loader {
                 tStyle.font = b;
                 node = new TextButton(data.getString("text"),tStyle);
                 break;
+            case "Widget":
+                return parseNode(widgetList.get(data.getString("key")).getJsonWithVar(data.get("variables")),parent,scaleX,scaleY);
         }
 
         if (data != null) {
@@ -335,7 +350,9 @@ public class Scene2Loader {
         else if (layout!=null && layout.has("priority") && parent instanceof FloatLayout){
             ((FloatLayout) parent).addFloatActor(node,layout.getInt("priority"));
         }
-
+        else if (layout!=null && layout.has("x_index") && parent instanceof GridLayout) {
+            ((GridLayout) parent).addGridActor(node,layout.getInt("y_index"),layout.getInt("x_index"),layout.getString("x_anchor"),layout.getString("y_anchor"));
+        }
         return node;
 
     }

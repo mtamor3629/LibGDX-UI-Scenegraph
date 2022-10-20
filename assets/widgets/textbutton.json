@@ -1,0 +1,36 @@
+{
+  "comments": "You will copy the center button here",
+  "variables": {
+    "size": ["data", "size"],
+    "text": ["data", "text"],
+    "font": ["data", "font"]
+  },
+  "contents": {
+    "type": "TextButton",
+    "format": {
+      "type": "Anchored"
+    },
+    "data": {
+      "upnode": "up",
+      "anchor": [0.5, 0.5],
+      "size": [300, 75],
+      "text": "Click Me",
+      "font": "gyparody",
+      "foreground": [255, 255, 255, 255]
+    },
+    "children": {
+      "up": {
+        "type": "NinePatch",
+        "data": {
+          "texture": "menubutton",
+          "anchor": [0.5, 0.5],
+          "interior": [33, 40, 62, 55]
+        }
+      }
+    },
+    "layout": {
+      "x_anchor": "center",
+      "y_anchor": "middle"
+    }
+  }
+}

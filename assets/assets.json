@@ -22,6 +22,9 @@
 			"size":     48
 		}
 	},
+	"widgets": {
+		"textbutton" : "widgets/textbutton.json"
+	},
     "scene2s" : {
         "lab": {
             "type"      : "Node",
@@ -95,31 +98,12 @@
 							}
 						},
 						"button1": {
-							"type"   : "TextButton",
-							"format" : {
-								"type" : "Anchored"
-							},
+							"type"   : "Widget",
 							"data"   : {
-								"upnode"  : "up",
-								"anchor"  : [0.5,0.5],
-								"size"    : [300, 75],
-								"text"	  : "Click Me",
-								"font"    : "gyparody",
-								"foreground" : [255,255,255,255]
-							},
-							"children": {
-								"up" : {
-									"type" : "NinePatch",
-									"data": {
-										"texture":  "menubutton",
-										"anchor"   : [0.5, 0.5],
-										"interior" : [33,40,62,55]
-									}
+								"key"     : "textbutton",
+								"variables" : {
+									"text": "sdfdsfds"
 								}
-							},
-							"layout" : {
-								"x_anchor" : "center",
-								"y_anchor" : "middle"
 							}
 						}
 					},
