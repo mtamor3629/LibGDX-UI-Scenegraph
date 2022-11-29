@@ -24,24 +24,34 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
-import edu.cornell.gdiac.ui.widgets.AnchoredLayout;
-import edu.cornell.gdiac.ui.widgets.CustomWidget;
-import edu.cornell.gdiac.ui.widgets.FloatLayout;
-import edu.cornell.gdiac.ui.widgets.GridLayout;
+import edu.cornell.gdiac.ui.widgets.*;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
 /**
  * This class provides functionality for parsing a JSON scenegraph specification, and generating the corresponding LibGDX scenegraph
  */
 public class Scene2Loader {
-    /**
-     * Takes in a {@link JsonValue} to produce a scene graph of ui elements
-     */
 
     static AssetDirectory assetDirectory;
     static HashMap<String, CustomWidget> widgetList = new HashMap<>();
-    public static Group genSceneGraph(JsonValue json, AssetDirectory assets,Stage s) {
+    static ScriptEngineManager manager = new ScriptEngineManager();
+    //static ScriptEngine engine = manager.getEngineByName("nashorn");
+
+    /**
+     * Takes in a {@link JsonValue} to produce a scene graph of ui elements.
+     * And adds the node bindings to the engine
+     *
+     * @param json The json file to be parsed
+     * @param assets The AssetDirectory to be used
+     * @param s The parent stage
+     * @return The root node of the scene graph
+     */
+    public static Group genSceneGraph(JsonValue json, AssetDirectory assets, Stage s) throws ScriptException {
         assetDirectory = assets;
         Group stage = new Group();
         stage.setSize(s.getWidth(),s.getHeight());
@@ -52,12 +62,17 @@ public class Scene2Loader {
         JsonValue widgets = json.get("widgets");
         if (widgets != null)
             loadWidgets(widgets);
+        long currentTime = System.currentTimeMillis();
         for (JsonValue actor : sceneGraph) {
-            stage.addActor(parseNode(actor, stage,1,1));
+            stage.addActor(parseNode(actor, "",stage, 1, 1));
         }
         return stage;
     }
 
+    /** Loads the widgets from the json file
+     *
+     * @param widgets The widget section of the JsonFile
+     */
     public static void loadWidgets(JsonValue widgets){
         JsonReader reader = new JsonReader();
         widgetList.clear();
@@ -67,126 +82,18 @@ public class Scene2Loader {
         }
     }
 
-    public static Table capsuleToAnchor(Actor actor, String xAnchor, String yAnchor, float xOffset, float yOffset){
-        Table table = new Table();
-        table.setFillParent(true);
-        table.add(actor);
-        Cell<Actor> cell = table.getCell(actor);
-        cell.size(actor.getWidth(),actor.getHeight());
-        if(yAnchor.equals("center")||xAnchor.equals("center"))
-            table.center();
-
-        switch (xAnchor) {
-            case "left":
-                table.left();
-                break;
-            case "right":
-                table.right();
-                break;
-            case "fill":
-                cell.fillX();
-                break;
-        }
-        switch (yAnchor) {
-            case "top":
-                table.top();
-                break;
-            case "bottom":
-                table.bottom();
-                break;
-            case "fill":
-                cell.fillY();
-                break;
-        }
-
-        cell.pad(yOffset,xOffset,yOffset,xOffset);
-        return table;
-    }
-
-    public static Group genAltAltSceneGraph(AssetDirectory assets,Stage stage) {
-        AnchoredLayout layout = new AnchoredLayout();
-        //layout.setSize(stage.getWidth(), stage.getHeight());
-        Texture t = assets.getEntry("background",Texture.class);
-        Image i = new Image(t);
-        i.setSize(t.getWidth(),t.getHeight());
-        i.setOrigin(0,0.5f);
-
-        layout.addAnchoredActor(i,"left","fill",0,0,false);
-        return layout;
-    }
-    public static Group genAltSceneGraph(AssetDirectory assets,Stage stage){
-        Group g = new Group();
-        g.setSize(stage.getWidth(),stage.getHeight());
-        Table t = new Table();
-        g.addActor(t);
-        //t.setDebug(true);
-        t.setFillParent(true);
-
-        Image i = new Image(assets.getEntry("background",Texture.class));
-        i.setSize(stage.getWidth()*2, stage.getHeight());
-
-        i.setOrigin(0,0.5f);
-        t.add(i).width(i.getWidth());
-        t.left();
-
-        Table t2 = new Table();
-        g.addActor(t2);
-        t2.setFillParent(true);
-
-        Image menu = new Image(assets.getEntry("menuboard",Texture.class));
-        menu.setOrigin(0.5f,1.0f);
-        menu.setScale(0.8f);
-        Group subG = new Group();
-        subG.setSize(menu.getWidth()*0.8f, menu.getHeight()*0.8f);
-        subG.addActor(menu);
-        t2.add(subG);
-        //t2.getCell(subG).size(menu.getPrefWidth()*0.8f,menu.getPrefHeight()*0.8f);
-        t2.center();
-        t2.top();
-        Button.ButtonStyle bStyle = new Button.ButtonStyle();
-        Image left = new Image(assets.getEntry("left",Texture.class));
-        //left.setScale(0.8f);
-        Skin skin = new Skin();
-        bStyle.up = left.getDrawable();
-        bStyle.down = skin.newDrawable(bStyle.up,0.7f,0.7f,0.7f,1);
-        Button leftB = new Button(bStyle);
-        leftB.setSize(leftB.getWidth()*0.8f,leftB.getHeight()*0.8f);
-        //subG.addActor(leftB);
-        subG.addActor(capsuleToAnchor(leftB,"left","bottom",subG.getWidth()*0.1f,subG.getHeight()*0.1f));
-
-        Image right = new Image(assets.getEntry("right",Texture.class));
-        //left.setScale(0.8f);
-        Button.ButtonStyle bStyle2 = new Button.ButtonStyle();
-        bStyle2.up = right.getDrawable();
-        bStyle2.down = skin.newDrawable(bStyle2.up,0.7f,0.7f,0.7f,1);
-
-        Button rightB = new Button(bStyle2);
-        rightB.setSize(rightB.getWidth()*0.8f,rightB.getHeight()*0.8f);
-        //subG.addActor(leftB);
-        subG.addActor(capsuleToAnchor(rightB,"right","bottom",subG.getWidth()*0.1f,subG.getHeight()*0.1f));
-
-        NinePatch n = new NinePatch(assets.getEntry("menubutton",Texture.class),33,33,40,40);
-        NinePatchDrawable nD = new NinePatchDrawable(n);
-        n.scale(0.8f,0.8f);
-        TextButton.TextButtonStyle tStyle = new ImageTextButton.ImageTextButtonStyle();
-        BitmapFont b = assets.getEntry("gyparody",BitmapFont.class);
-        b.getData().setScale(0.8f);
-        tStyle.font = b;
-        tStyle.up=nD;
-        tStyle.down = skin.newDrawable(nD,0.7f,0.7f,0.7f,1);
-        TextButton text = new TextButton("Click Me",tStyle);
-        text.setSize(300,75);
-        Table tbl = capsuleToAnchor(text,"center","middle",0,0);
-        tbl.getCell(text).size(300*0.8f,75*0.8f);
-        subG.addActor(tbl);
-        skin.dispose();
-        System.out.println(text.getScaleX());
-        return g;
-    }
-
-
-    private static Actor parseNode(JsonValue actor,Group parent,float scaleX,float scaleY){
-        String name = ((parent==null)?"":(parent.getName()+"."))+actor.name;
+    /** Parses a node in the json file
+     *
+     * @param actor The JsonValue of the node
+     * @param parent The parent of the node
+     * @param scaleX The scaleX of its parent node
+     * @param scaleY The scaleY of its parent node
+     * @return The node parsed
+     */
+    private static Actor parseNode(JsonValue actor,String parentName, Group parent,float scaleX,float scaleY) throws ScriptException {
+        //parse basic information
+        String name = (parentName.equals("")?"":parentName+"_")+actor.name;
+        System.out.println(name);
         String type = actor.getString("type");
         String comment = actor.getString("comment", null);
         JsonValue format = actor.get("format");
@@ -194,12 +101,13 @@ public class Scene2Loader {
         JsonValue layout = actor.get("layout");
         JsonValue children = actor.get("children");
         boolean hasChild = false;
-        boolean anchored = false;
         WidgetGroup layoutWidget = null;
 
+        //check if it has children
         if(children != null)
             hasChild = true;
 
+        //check if layout manage is required
         if (format != null) {
             String formatType = format.getString("type");
             switch (formatType) {
@@ -217,18 +125,22 @@ public class Scene2Loader {
                     int height = format.getInt("Height");
                     layoutWidget = new GridLayout(width,height);
                     break;
+                case "Constraint":
+                    String script = format.getString("constraints");
+                    layoutWidget = new ConstraintLayout(manager,script);
+                    break;
                 default:
                     throw new IllegalArgumentException("Layout type Undefined");
             }
         }
 
+        //parse node type and establish corresponding node
         Actor node = new Group();
-
         switch (type) {
             case "Node":
                 node = new Group();
                 if(parent!=null)
-                node.setSize(parent.getWidth(), parent.getHeight());
+                    node.setSize(parent.getWidth(), parent.getHeight());
                 break;
             case "NinePatch":
                 data.get("texture");
@@ -253,7 +165,7 @@ public class Scene2Loader {
                 break;
             case "Button":
                 Button.ButtonStyle bStyle = new Button.ButtonStyle();
-                Actor upnode = parseNode(children.get(data.getString("upnode")), (Group) node,scaleX,scaleY);
+                Actor upnode = parseNode(children.get(data.getString("upnode")),name, (Group) node,scaleX,scaleY);
                 children.remove(data.getString("upnode"));
                 if (upnode instanceof Image) {
                     Skin skin = new Skin();
@@ -265,7 +177,7 @@ public class Scene2Loader {
                 break;
             case "TextButton":
                 TextButton.TextButtonStyle tStyle = new ImageTextButton.ImageTextButtonStyle();
-                Actor tUp = parseNode(children.get(data.getString("upnode")), (Group)node ,scaleX,scaleY);
+                Actor tUp = parseNode(children.get(data.getString("upnode")),name, (Group)node ,scaleX,scaleY);
                 children.remove(data.getString("upnode"));
                 if (tUp instanceof Image) {
                     Skin skin = new Skin();
@@ -279,9 +191,13 @@ public class Scene2Loader {
                 node = new TextButton(data.getString("text"),tStyle);
                 break;
             case "Widget":
-                return parseNode(widgetList.get(data.getString("key")).getJsonWithVar(data.get("variables")),parent,scaleX,scaleY);
+                return parseNode(widgetList.get(data.getString("key")).getJsonWithVar(data.get("variables")),parentName,parent,scaleX,scaleY);
+            default:
+                //TODO: Add more node types
+                throw new IllegalArgumentException("Node type Undefined");
         }
 
+        //set metadata for nodes if any
         if (data != null) {
             JsonValue jsPos = data.get("bounds");
             if (jsPos != null) {
@@ -314,33 +230,44 @@ public class Scene2Loader {
                 node.setVisible(data.getBoolean("visible"));
         }
 
+        //fix scaling issue with respect to parent
         node.setSize(node.getWidth()*scaleX,node.getHeight()*scaleY);
 
-        if(hasChild && !(node instanceof Group)){
+        //put binding into engine for constraint layout
+        node.setName(name);
+        manager.put(name,node);
+        System.out.println("putting "+name+" into manager");
+
+        //Convert to group if in the node is not a group for adding children
+        if((hasChild && !(node instanceof Group))||layoutWidget!=null){
             Group g = new Group();
             g.addActor(node);
             g.setSize(node.getWidth(), node.getHeight());
             node = g;
         }
 
+        // add layout widget if any
         if(layoutWidget!=null){
             ((Group)node).addActor(layoutWidget);
             layoutWidget.setSize(node.getWidth(),node.getHeight());
         }
 
+        //add children if any
         if(hasChild) {
             if(layoutWidget!=null){
                 for (JsonValue child : children) {
-                    parseNode(child, layoutWidget, scaleX, scaleY);
+                    /*  Layout widget will be the parent of all children and they will be adding it directly.*/
+                    parseNode(child, name,layoutWidget, scaleX, scaleY);
                 }
             }
             else {
                 for (JsonValue child : children) {
-                    ((Group) node).addActor((parseNode(child, (Group) node, scaleX, scaleY)));
+                    ((Group) node).addActor((parseNode(child, name,(Group) node, scaleX, scaleY)));
                 }
             }
         }
 
+        // perform the layout manager parses if any
         if (layout!=null && layout.has("x_anchor") && parent instanceof AnchoredLayout) {
             boolean abs = layout.getBoolean("absolute",false);
             float xOffset = layout.getFloat("x_offset",0f);
@@ -353,7 +280,9 @@ public class Scene2Loader {
         else if (layout!=null && layout.has("x_index") && parent instanceof GridLayout) {
             ((GridLayout) parent).addGridActor(node,layout.getInt("y_index"),layout.getInt("x_index"),layout.getString("x_anchor"),layout.getString("y_anchor"));
         }
+        else if (layout!=null && layout.has("bindings") && parent instanceof ConstraintLayout){
+            ((ConstraintLayout) parent).addConstraintActor(node,name,layout.getString("bindings"));
+        }
         return node;
-
     }
 }

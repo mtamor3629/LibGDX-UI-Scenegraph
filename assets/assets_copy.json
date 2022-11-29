@@ -1,0 +1,66 @@
+{
+	"textures": {
+		"background": {
+            "file":   "textures/background.png"
+        },
+        "menuboard": {
+            "file":  "textures/menu.png"
+        },
+        "menubutton": {
+            "file":  "textures/button.png"
+        },
+        "left": {
+            "file":   "textures/left_arrow.png"
+        },
+        "right": {
+            "file":   "textures/right_arrow.png"
+        }
+	},
+	"fonts": {
+		"gyparody": {
+			"file":     "fonts/gyparody-hv.ttf",
+			"size":     48
+		}
+	},
+	"widgets": {
+		"textbutton" : "widgets/textbutton.json"
+	},
+    "scene2s" : {
+        "lab": {
+            "type"      : "Node",
+            "comment"   : "This is the root node of the scene for the lab",
+            "format"    : {
+                "type" : "Constraint",
+				"constraints" : "x:300\ny:x/2"
+            },
+            "children":  {
+                "backdrop": {
+                    "type": "Image",
+                    "data": {
+                        "texture":  "background",
+                        "anchor":   [0.0,0.5]
+                    },
+                    "layout" : {
+                      "bindings" : "x:x"
+                    }
+                },
+                "startmenu": {
+					"script": "height: 0.3*width\n",
+
+					"type": "Image",
+					"format"    : {
+						"type" : "Anchored"
+					},
+					"data": {
+						"texture":  "menuboard",
+						"anchor":   [0.5,1.0],
+						"scale":    0.8
+					},
+					"layout" : {
+						"bindings" : "width:x\nheight:y"
+					}
+				}
+            }
+        }
+    }
+}
