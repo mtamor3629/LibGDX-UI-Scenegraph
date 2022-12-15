@@ -2,9 +2,14 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -23,6 +28,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	Stage stage;
 
+	Group root;
+
 	//String demoScript = "lab_startmenu.setRotation(stage.getViewport().getScreenWidth());\n";
 
 	String demoScript = "";
@@ -35,7 +42,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		JsonValue json = reader.parse(Gdx.files.internal("assets_copy.json"));
 		stage = new Stage();
 		try {
-			stage.addActor(Scene2Loader.genSceneGraph(json,assets,stage));
+			root = Scene2Loader.genSceneGraph(json,assets,stage);
+			stage.addActor(root);
 		} catch (ScriptException e) {
 			throw new RuntimeException(e);
 		}
@@ -60,6 +68,15 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void resize(int width, int height){
-		stage.getViewport().update(width, height, true);
+		stage.getViewport().update(1280, 720, true);
+		stage.getRoot().setSize(width, height);
+		root.findActor("lab").setSize(width, height);
+		root.setSize(width, height);
+		for (Actor actor : root.getChildren()) {
+			System.out.println(actor.getName());
+			actor.setSize(width, height);
+			if(actor instanceof WidgetGroup)
+				((WidgetGroup) actor).layout();
+		}
 	}
 }

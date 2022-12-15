@@ -77,6 +77,8 @@ public class ConstraintLayout extends WidgetGroup {
     private ScriptEngine engine;
     private ArrayList<Constrain> constraints;
 
+    private static final boolean DEBUG = true;
+
     @Override
     public void addActor(Actor actor){}
 
@@ -96,6 +98,8 @@ public class ConstraintLayout extends WidgetGroup {
         this.constraints = parseConstraints(script);
         this.engine = manager.getEngineByName("nashorn");
         setBindings();
+        this.setFillParent(true);
+
     }
 
     /** put the bindings into the engine */
@@ -157,7 +161,8 @@ public class ConstraintLayout extends WidgetGroup {
                         String handle = parts[1];
                         for(Constrain c:constraints){
                             if(c.handle.equals(handle)){
-                                System.out.println("Adding setter: "+actorName+"."+scriptAttributes[i]+" = __value__");
+                                if (DEBUG)
+                                    System.out.println("Adding setter: "+actorName+"."+scriptAttributes[i]+" = __value__");
                                 c.addSetter(actorName+scriptSetter[i]);
                                 break;
                             }
@@ -247,7 +252,8 @@ public class ConstraintLayout extends WidgetGroup {
         float[] grad = new float[constraints.size()];
         for(int i = 0; i < grad.length; i++){
             grad[i] = (float)computeGrad(i,1e-2);
-            System.out.println("Value: "+constraints.get(i).currVal+" Grad: "+grad[i]+" Loss: "+constraints.get(i).getLoss());
+            if (DEBUG)
+                System.out.println("Value: "+constraints.get(i).currVal+" Grad: "+grad[i]+" Loss: "+constraints.get(i).getLoss());
         }
         return grad;
     }
@@ -266,7 +272,8 @@ public class ConstraintLayout extends WidgetGroup {
                 e.printStackTrace();
             }
             try {
-                System.out.println("Iteration: "+i+" Loss: "+getLoss());
+                if (DEBUG)
+                    System.out.println("Iteration: "+i+" Loss: "+getLoss());
             } catch (ScriptException e) {
                 throw new RuntimeException(e);
             }
@@ -290,9 +297,13 @@ public class ConstraintLayout extends WidgetGroup {
 
     @Override
     public void layout() {
+        System.out.println("Layout");
         long start = System.currentTimeMillis();
-        adamGrad(1000,10f);
-        System.out.println("Time taken: "+(System.currentTimeMillis()-start));
+        engine.put("width",this.getWidth());
+        engine.put("height",this.getHeight());
+        adamGrad(2000,10f);
+        if (DEBUG)
+            System.out.println("Time taken: "+(System.currentTimeMillis()-start));
         try {
             for (Constrain c : constraints) {
                 c.applyVal();

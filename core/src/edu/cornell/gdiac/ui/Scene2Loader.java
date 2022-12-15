@@ -39,8 +39,7 @@ public class Scene2Loader {
 
     static AssetDirectory assetDirectory;
     static HashMap<String, CustomWidget> widgetList = new HashMap<>();
-    static ScriptEngineManager manager = new ScriptEngineManager();
-    //static ScriptEngine engine = manager.getEngineByName("nashorn");
+    static ScriptEngineManager manager = new ScriptEngineManager();;
 
     /**
      * Takes in a {@link JsonValue} to produce a scene graph of ui elements.
@@ -55,6 +54,7 @@ public class Scene2Loader {
         assetDirectory = assets;
         Group stage = new Group();
         stage.setSize(s.getWidth(),s.getHeight());
+        stage.setName("root");
         JsonValue sceneGraph = json.get("scene2s");
         if (sceneGraph == null || sceneGraph.isEmpty())
             throw new IllegalArgumentException("corrupted json file, does not contain scene2s specs");
