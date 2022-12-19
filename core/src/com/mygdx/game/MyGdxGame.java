@@ -32,7 +32,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		assets.loadAssets();
 		assets.finishLoading();
 		JsonReader reader = new JsonReader();
-		JsonValue json = reader.parse(Gdx.files.internal("assets_copy.json"));
+		JsonValue json = reader.parse(Gdx.files.internal("assets.json"));
 		stage = new Stage();
 		try {
 			stage.addActor(Scene2Loader.genSceneGraph(json,assets,stage));
