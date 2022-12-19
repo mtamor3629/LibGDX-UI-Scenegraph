@@ -77,7 +77,7 @@ public class ConstraintLayout extends WidgetGroup {
     private ScriptEngine engine;
     private ArrayList<Constrain> constraints;
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     @Override
     public void addActor(Actor actor){}
@@ -297,7 +297,8 @@ public class ConstraintLayout extends WidgetGroup {
 
     @Override
     public void layout() {
-        System.out.println("Layout");
+        if(DEBUG)
+            System.out.println("Layout");
         long start = System.currentTimeMillis();
         engine.put("width",this.getWidth());
         engine.put("height",this.getHeight());
@@ -307,7 +308,8 @@ public class ConstraintLayout extends WidgetGroup {
         try {
             for (Constrain c : constraints) {
                 c.applyVal();
-                System.out.println(c.handle + " " + c.currVal);
+                if(DEBUG)
+                    System.out.println(c.handle + " " + c.currVal);
             }
         }
         catch (ScriptException e) {

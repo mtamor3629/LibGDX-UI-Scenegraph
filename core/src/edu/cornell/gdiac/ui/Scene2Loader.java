@@ -14,44 +14,59 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import edu.cornell.gdiac.ui.nodeParser.*;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
 import edu.cornell.gdiac.ui.widgets.*;
 
-import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 /**
  * This class provides functionality for parsing a JSON scenegraph specification, and generating the corresponding LibGDX scenegraph
  */
 public class Scene2Loader {
 
-    static AssetDirectory assetDirectory;
-    static HashMap<String, CustomWidget> widgetList = new HashMap<>();
-    static ScriptEngineManager manager = new ScriptEngineManager();;
+    AssetDirectory assetDirectory;
+    public HashMap<String, CustomWidget> widgetList;
+    ScriptEngineManager manager;
+    Stage s;
+    JsonValue json;
+    ArrayList<NodeParser> parsers;
+
+    public Scene2Loader(AssetDirectory assets, JsonValue json, Stage s) {
+        assetDirectory = assets;
+        this.json = json;
+        this.s = s;
+        parsers = new ArrayList<>();
+
+        //****** Add parsers here ******//
+        parsers.add(new ButtonParser(this));
+        parsers.add(new ImageParser());
+        parsers.add(new LabelParser());
+        parsers.add(new NinePatchParser());
+        parsers.add(new TextButtonParser(this));
+        parsers.add(new WidgetParser(this));
+
+        widgetList = new HashMap<>();
+        manager = new ScriptEngineManager();
+    }
 
     /**
      * Takes in a {@link JsonValue} to produce a scene graph of ui elements.
      * And adds the node bindings to the engine
      *
-     * @param json The json file to be parsed
-     * @param assets The AssetDirectory to be used
-     * @param s The parent stage
      * @return The root node of the scene graph
      */
-    public static Group genSceneGraph(JsonValue json, AssetDirectory assets, Stage s) throws ScriptException {
-        assetDirectory = assets;
+    public Group genSceneGraph() throws ScriptException {
         Group stage = new Group();
         stage.setSize(s.getWidth(),s.getHeight());
         stage.setName("root");
@@ -73,7 +88,7 @@ public class Scene2Loader {
      *
      * @param widgets The widget section of the JsonFile
      */
-    public static void loadWidgets(JsonValue widgets){
+    public void loadWidgets(JsonValue widgets){
         JsonReader reader = new JsonReader();
         widgetList.clear();
         for (JsonValue widget: widgets) {
@@ -90,7 +105,7 @@ public class Scene2Loader {
      * @param scaleY The scaleY of its parent node
      * @return The node parsed
      */
-    private static Actor parseNode(JsonValue actor,String parentName, Group parent,float scaleX,float scaleY) throws ScriptException {
+    public Actor parseNode(JsonValue actor, String parentName, Group parent, float scaleX, float scaleY) throws ScriptException {
         //parse basic information
         String name = (parentName.equals("")?"":parentName+"_")+actor.name;
         System.out.println(name);
@@ -134,8 +149,16 @@ public class Scene2Loader {
             }
         }
 
-        //parse node type and establish corresponding node
         Actor node = new Group();
+        //parse node type and establish corresponding node
+        for(NodeParser p: parsers){
+            if(p.getTypeKey().equals(type)) {
+                node = p.process(actor,assetDirectory,scaleX,scaleY,parent);
+                break;
+            }
+        }
+
+        /*
         switch (type) {
             case "Node":
                 node = new Group();
@@ -193,9 +216,10 @@ public class Scene2Loader {
             case "Widget":
                 return parseNode(widgetList.get(data.getString("key")).getJsonWithVar(data.get("variables")),parentName,parent,scaleX,scaleY);
             default:
-                //TODO: Add more node types
                 throw new IllegalArgumentException("Node type Undefined");
         }
+
+         */
 
         //set metadata for nodes if any
         if (data != null) {

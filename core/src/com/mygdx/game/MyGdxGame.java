@@ -2,14 +2,12 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
-import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -17,7 +15,6 @@ import edu.cornell.gdiac.ui.Scene2Loader;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
 
 import javax.script.*;
-import java.util.Timer;
 //import com.badlogic.gdx.graphics.g2d.Free
 
 public class MyGdxGame extends ApplicationAdapter {
@@ -39,10 +36,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		assets.loadAssets();
 		assets.finishLoading();
 		JsonReader reader = new JsonReader();
-		JsonValue json = reader.parse(Gdx.files.internal("assets_copy.json"));
+		JsonValue json = reader.parse(Gdx.files.internal("assets.json"));
 		stage = new Stage();
+		Scene2Loader scene2 = new Scene2Loader(assets,json,stage);
 		try {
-			root = Scene2Loader.genSceneGraph(json,assets,stage);
+			root = scene2.genSceneGraph();
 			stage.addActor(root);
 		} catch (ScriptException e) {
 			throw new RuntimeException(e);
@@ -70,7 +68,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void resize(int width, int height){
 		stage.getViewport().update(1280, 720, true);
 		stage.getRoot().setSize(width, height);
-		root.findActor("lab").setSize(width, height);
 		root.setSize(width, height);
 		for (Actor actor : root.getChildren()) {
 			System.out.println(actor.getName());
