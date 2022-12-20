@@ -1,7 +1,16 @@
+/*
+ * ConstraintLayout.java
+ *
+ * @author Barry Lyu
+ * @date   12/20/22
+ */
+
 package edu.cornell.gdiac.ui.widgets;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 import org.graalvm.compiler.hotspot.stubs.DivisionByZeroExceptionStub;
 
 import javax.script.ScriptEngine;
@@ -11,6 +20,11 @@ import java.util.ArrayList;
 
 /**
  * This class represents a constraint Layout which allows for the declaration of constraints for layout management.
+ *
+ * A constraint layout is a layout manager that takes a set of constraint scripts and bindings and works out the layout
+ * of its children based on the constraints. The constraints would be variables set to different expressions and the
+ * constraint layout will attempt to solve the constraints to find the best layout. Element properties can also be
+ * binded to these constraint variables to allow for the layout to be changed based on the values of the variables.
  */
 public class ConstraintLayout extends WidgetGroup {
 
@@ -40,6 +54,9 @@ public class ConstraintLayout extends WidgetGroup {
             this.currVal = 0f;
         }
 
+        /**
+         * Add a binding to the constraint so that setting the constraint will also set the binding
+         * */
         public void addSetter(String setter){
             this.setters += "\n"+setter;
         }
@@ -82,7 +99,10 @@ public class ConstraintLayout extends WidgetGroup {
     @Override
     public void addActor(Actor actor){}
 
-    public void addConstraintActor(Actor actor, String actorName, String bindings) throws ScriptException {
+    /**
+     * Use this method instead of {@code #addActor(Actor)} to add actors to the Constraint Layout
+     * */
+    public void addConstraintActor(Actor actor, String actorName, JsonValue bindings) throws ScriptException {
         super.addActor(actor);
         addSetter(actorName,bindings);
     }
@@ -90,16 +110,16 @@ public class ConstraintLayout extends WidgetGroup {
     /**
      * Creates a new ConstraintLayout with the given script.
      *
-     * @param script The script to be used for the layout
+     * @param manager The global script manager to use for the layout
+     * @param script The JsonValue containing the scripts to be used for the layout
      * @throws ScriptException If the script is invalid
      */
-    public ConstraintLayout(ScriptEngineManager manager, String script) throws ScriptException {
+    public ConstraintLayout(ScriptEngineManager manager, JsonValue script) throws ScriptException {
         super();
         this.constraints = parseConstraints(script);
         this.engine = manager.getEngineByName("nashorn");
         setBindings();
         this.setFillParent(true);
-
     }
 
     /** put the bindings into the engine */
@@ -115,13 +135,14 @@ public class ConstraintLayout extends WidgetGroup {
      * Constraints follow the syntax: { "handle:expression:hint"}
      *
      * @param script
-     * @return
+     * @return an array of constraints
      * @throws ScriptException
      */
-    private ArrayList<Constrain> parseConstraints(String script) throws ScriptException {
+    private ArrayList<Constrain> parseConstraints(JsonValue script) throws ScriptException {
         ArrayList<Constrain> constraints = new ArrayList<>();
+        String[] strings = script.asStringArray();
         //parse the constraint definitions
-        for(String str:script.split("\n")){
+        for(String str:strings){
             if(str.contains(":")){
                 String[] parts = str.split(":");
                 String handle = parts[0].trim();
@@ -152,8 +173,9 @@ public class ConstraintLayout extends WidgetGroup {
     }
 
     /** Adds a setter to the constraint with the given handle */
-    public void addSetter(String actorName,String bindings) throws ScriptException {
-        for(String str:bindings.split("\n")){
+    public void addSetter(String actorName, JsonValue bindings) throws ScriptException {
+        String[] string = bindings.asStringArray();
+        for(String str:string){
             if(str.contains(":")){
                 String[] parts = str.split(":");
                 for(int i = 0; i < scriptAttributes.length; i++){
@@ -176,6 +198,10 @@ public class ConstraintLayout extends WidgetGroup {
         }
     }
 
+    /**
+     * The following three Arrays are coupled together to allow for the conversion of the script attributes to the
+     * corresponding setter methods. Adding the three arrays allow for the addition of new supported attributes.
+     */
     private static String[] scriptAttributes = new String[]{
             "width","height","x","y","scaleX","scaleY","rotation"
     };
@@ -232,6 +258,7 @@ public class ConstraintLayout extends WidgetGroup {
         return returnString.toString();
     }*/
 
+    /** Get the loss of all constraints summed */
     private float getLoss() throws ScriptException {
         float loss = 0;
         for(Constrain c:constraints){
@@ -240,6 +267,12 @@ public class ConstraintLayout extends WidgetGroup {
         return loss;
     }
 
+    /**
+     * Compute the gradient of the loss with respect to a constraint by simulation.
+     *
+     * @param index the index of the constraint to compute the gradient for
+     * @param delta how much of a delta we used to simulate the gradient
+     */
     private double computeGrad(int index, double delta) throws ScriptException {
         double loss = getLoss();
         constraints.get(index).currVal += delta;
@@ -248,6 +281,9 @@ public class ConstraintLayout extends WidgetGroup {
         return (loss_new-loss)/delta;
     }
 
+    /**
+     * Compute the the gradient vector of the loss with respect to all constraints by simulation.
+     */
     private float[] computeGradient() throws ScriptException {
         float[] grad = new float[constraints.size()];
         for(int i = 0; i < grad.length; i++){
@@ -258,9 +294,17 @@ public class ConstraintLayout extends WidgetGroup {
         return grad;
     }
 
+    /** parameters of ADAM gradient descent */
     private final float ADAM_BETA1 = 0.9f, ADAM_BETA2 = 0.999f, ADAM_EPSILON = 1e-8f;
 
-    /** perform gradient descent on the specified function */
+    /**
+     * perform gradient descent on the Constraint losses.
+     *
+     * The gradient descent will be cut after maxIter or if the loss is below 1.
+     *
+     * @param learningRate the learning rate of the gradient descent
+     * @param maxIter the maximum number of iterations to perform
+     * */
     private void adamGrad(int maxIter,float learningRate){
         float[] m = new float[constraints.size()];
         float[] v = new float[constraints.size()];
@@ -295,6 +339,11 @@ public class ConstraintLayout extends WidgetGroup {
         }
     }
 
+    /**
+     * Layout the nodes in the graph using the constraints.
+     *
+     * TODO: More variables could be put into the engines to increase the scope of constraint scripts.
+     */
     @Override
     public void layout() {
         if(DEBUG)
@@ -302,6 +351,7 @@ public class ConstraintLayout extends WidgetGroup {
         long start = System.currentTimeMillis();
         engine.put("width",this.getWidth());
         engine.put("height",this.getHeight());
+        //These gradient descent parameters could be more fine-tuned for performance or accuracy
         adamGrad(2000,10f);
         if (DEBUG)
             System.out.println("Time taken: "+(System.currentTimeMillis()-start));

@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.ui.nodeParser.*;
@@ -141,7 +142,7 @@ public class Scene2Loader {
                     layoutWidget = new GridLayout(width,height);
                     break;
                 case "Constraint":
-                    String script = format.getString("constraints");
+                    JsonValue script = format.get("constraints");
                     layoutWidget = new ConstraintLayout(manager,script);
                     break;
                 default:
@@ -246,7 +247,7 @@ public class Scene2Loader {
             ((GridLayout) parent).addGridActor(node,layout.getInt("y_index"),layout.getInt("x_index"),layout.getString("x_anchor"),layout.getString("y_anchor"));
         }
         else if (layout!=null && layout.has("bindings") && parent instanceof ConstraintLayout){
-            ((ConstraintLayout) parent).addConstraintActor(node,name,layout.getString("bindings"));
+            ((ConstraintLayout) parent).addConstraintActor(node,name,layout.get("bindings"));
         }
         return node;
     }

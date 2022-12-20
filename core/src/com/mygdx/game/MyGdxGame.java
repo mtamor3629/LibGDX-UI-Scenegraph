@@ -20,14 +20,9 @@ import javax.script.*;
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture img;
-
 	AssetDirectory assets;
-
 	Stage stage;
-
 	Group root;
-
-	//String demoScript = "lab_startmenu.setRotation(stage.getViewport().getScreenWidth());\n";
 
 	String demoScript = "";
 	@Override
@@ -36,6 +31,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		assets.loadAssets();
 		assets.finishLoading();
 		JsonReader reader = new JsonReader();
+		/* Parse the scene2d layout */
 		JsonValue json = reader.parse(Gdx.files.internal("assets.json"));
 		stage = new Stage();
 		Scene2Loader scene2 = new Scene2Loader(assets,json,stage);
@@ -66,6 +62,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void resize(int width, int height){
+		//****** this line is added to prevent auto zoom from interfering with layout ******//
 		stage.getViewport().update(1280, 720, true);
 		stage.getRoot().setSize(width, height);
 		root.setSize(width, height);
