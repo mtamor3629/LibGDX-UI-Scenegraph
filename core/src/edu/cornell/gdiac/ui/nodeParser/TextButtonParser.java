@@ -26,12 +26,13 @@ public class TextButtonParser implements NodeParser{
 
     @Override
     public Actor process(JsonValue json, AssetDirectory assetDirectory, float scaleX, float scaleY, Actor parent) {
-        TextButton.TextButtonStyle tStyle = new ImageTextButton.ImageTextButtonStyle();
         JsonValue data = json.get("data");
         JsonValue children = json.get("children");
+        TextButton.TextButtonStyle tStyle = new ImageTextButton.ImageTextButtonStyle();
+        Group node = new Group();
         Actor tUp = null;
         try {
-            tUp = loader.parseNode(children.get(data.getString("upnode")),"", new Group() ,scaleX,scaleY);
+            tUp = loader.parseNode(children.get(data.getString("upnode")),"", (Group)node ,scaleX,scaleY);
         } catch (ScriptException e) {
             throw new RuntimeException(e);
         }
@@ -45,6 +46,7 @@ public class TextButtonParser implements NodeParser{
         BitmapFont b = assetDirectory.getEntry("gyparody",BitmapFont.class);
         b.getData().setScale(scaleX,scaleY);
         tStyle.font = b;
-        return new TextButton(data.getString("text"),tStyle);
+        node = new TextButton(data.getString("text"),tStyle);
+        return node;
     }
 }

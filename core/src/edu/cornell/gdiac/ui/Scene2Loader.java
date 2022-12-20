@@ -49,12 +49,12 @@ public class Scene2Loader {
         parsers = new ArrayList<>();
 
         //****** Add parsers here ******//
+        parsers.add(new SimpleNodeParser());
         parsers.add(new ButtonParser(this));
         parsers.add(new ImageParser());
         parsers.add(new LabelParser());
         parsers.add(new NinePatchParser());
         parsers.add(new TextButtonParser(this));
-        parsers.add(new WidgetParser(this));
 
         widgetList = new HashMap<>();
         manager = new ScriptEngineManager();
@@ -149,6 +149,10 @@ public class Scene2Loader {
             }
         }
 
+        //if it is a widget, jump straight to widget def
+        if(type.equals("Widget"))
+            return parseNode(widgetList.get(data.getString("key")).getJsonWithVar(data.get("variables")),parentName,parent,scaleX,scaleY);
+
         Actor node = new Group();
         //parse node type and establish corresponding node
         for(NodeParser p: parsers){
@@ -157,69 +161,6 @@ public class Scene2Loader {
                 break;
             }
         }
-
-        /*
-        switch (type) {
-            case "Node":
-                node = new Group();
-                if(parent!=null)
-                    node.setSize(parent.getWidth(), parent.getHeight());
-                break;
-            case "NinePatch":
-                data.get("texture");
-                int leftB = data.get("interior").getInt(0);
-                int botB = data.get("interior").getInt(1);
-                NinePatch np = new NinePatch(assetDirectory.getEntry(data.getString("texture"),Texture.class),leftB,botB,leftB,botB);
-                np.scale(scaleX,scaleY);
-                node = new Image(new NinePatchDrawable(np));
-                break;
-            case "Image":
-                Texture t = assetDirectory.getEntry(data.getString("texture"), Texture.class);
-                node = new Image(t);
-                node.setSize(t.getWidth(),t.getHeight());
-                break;
-            case "Label":
-                Label.LabelStyle lStyle = new Label.LabelStyle();
-                lStyle.font = assetDirectory.getEntry(data.getString("font"), BitmapFont.class);
-                JsonValue color = data.get("foreground");
-                if (color != null)
-                    lStyle.fontColor = new Color(color.getInt(0), color.getInt(1), color.getInt(2), color.getInt(3));
-                node = new Label(data.getString("text"), lStyle);
-                break;
-            case "Button":
-                Button.ButtonStyle bStyle = new Button.ButtonStyle();
-                Actor upnode = parseNode(children.get(data.getString("upnode")),name, (Group) node,scaleX,scaleY);
-                children.remove(data.getString("upnode"));
-                if (upnode instanceof Image) {
-                    Skin skin = new Skin();
-                    bStyle.up = ((Image) upnode).getDrawable();
-                    bStyle.down = skin.newDrawable(bStyle.up, 0.7f, 0.7f, 0.7f, 1);
-                    skin.dispose();
-                    node = new Button(bStyle);
-                }
-                break;
-            case "TextButton":
-                TextButton.TextButtonStyle tStyle = new ImageTextButton.ImageTextButtonStyle();
-                Actor tUp = parseNode(children.get(data.getString("upnode")),name, (Group)node ,scaleX,scaleY);
-                children.remove(data.getString("upnode"));
-                if (tUp instanceof Image) {
-                    Skin skin = new Skin();
-                    tStyle.up = ((Image) tUp).getDrawable();
-                    tStyle.down = skin.newDrawable(tStyle.up, 0.7f, 0.7f, 0.7f, 1);
-                    skin.dispose();
-                }
-                BitmapFont b = assetDirectory.getEntry("gyparody",BitmapFont.class);
-                b.getData().setScale(scaleX,scaleY);
-                tStyle.font = b;
-                node = new TextButton(data.getString("text"),tStyle);
-                break;
-            case "Widget":
-                return parseNode(widgetList.get(data.getString("key")).getJsonWithVar(data.get("variables")),parentName,parent,scaleX,scaleY);
-            default:
-                throw new IllegalArgumentException("Node type Undefined");
-        }
-
-         */
 
         //set metadata for nodes if any
         if (data != null) {
@@ -263,7 +204,7 @@ public class Scene2Loader {
         System.out.println("putting "+name+" into manager");
 
         //Convert to group if in the node is not a group for adding children
-        if((hasChild && !(node instanceof Group))||layoutWidget!=null){
+        if((hasChild && !(node instanceof Group))){
             Group g = new Group();
             g.addActor(node);
             g.setSize(node.getWidth(), node.getHeight());
