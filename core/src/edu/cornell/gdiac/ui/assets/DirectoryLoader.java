@@ -129,6 +129,8 @@ public class DirectoryLoader extends AsynchronousAssetLoader<AssetDirectory.Inde
         JsonReader reader = new JsonReader();
         cachedData = new AssetDirectory.Index();
         cachedData.directory = reader.parse(file);
+        System.out.println("Read json!");
+        System.out.flush();
         for(AssetParser<?> parser : parsers) {
             ObjectMap<String,String> keys = cachedData.keymap.get( parser.getType(), null );
             if (keys == null) {

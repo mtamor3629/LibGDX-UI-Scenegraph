@@ -1,3 +1,7 @@
+println  "Root project:   ${project.rootProject}";
+println  "  rootDir:      ${project.rootDir}"
+println  "  projectDir:   ${project.projectDir}";
+println  "  project dir:  ${System.getProperty("user.dir")}";
 buildscript {
     
 
@@ -48,7 +52,7 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-
+        implementation files("../assets/soundlib.jar")
     }
 }
 
@@ -59,6 +63,7 @@ project(":core") {
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        implementation files("../assets/soundlib.jar")
 
     }
 }

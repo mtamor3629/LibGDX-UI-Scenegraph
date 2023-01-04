@@ -22,6 +22,9 @@
 			"size":     48
 		}
 	},
+	"sounds": {
+		"failurewav": "Failure.wav"
+	},
 	"widgets": {
 		"textbutton" : "widgets/textbutton.json"
 	},

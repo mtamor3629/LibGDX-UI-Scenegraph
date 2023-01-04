@@ -1,7 +1,7 @@
 /*
- * MusicBufferLoader.java
+ * AudioSourceLoader.java
  *
- * This is a simple loader for processing music buffers (and making them assets managed
+ * This is a simple loader for processing audio sources (and making them assets managed
  * by the asset manager.  This is required for using the new audio engine.
  *
  * This code is based on the template for SoundLoader by mzechner.
@@ -19,52 +19,51 @@ import com.badlogic.gdx.assets.loaders.AssetLoader;
 import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
+import edu.cornell.gdiac.audio.AudioEngine;
+import edu.cornell.gdiac.audio.AudioSource;
 
 /**
- * This class is an {@link AssetLoader} to load {@link Music} assets.
- *
- * Given the primitive state of LibGDX audio, we cannot do much more than
- * specify the filename when loading the asset.
+ * This class is an {@link AssetLoader} to load {@link AudioSource} assets.
  */
-public class MusicLoader extends AsynchronousAssetLoader<Music, MusicLoader.MusicParameters> {
-    /** The asynchronously read MusicBuffer */
-    private Music cachedMusic;
+public class AudioSourceLoader extends AsynchronousAssetLoader<AudioSource, AudioSourceLoader.AudioSourceParameters> {
+
+    /** The asynchronously read audio source */
+    private AudioSource cachedSource;
     
     /**
-     * The definable parameters for a {@link Music} object.
+     * The definable parameters for an {@link AudioSource}.
      */
-    public static  class MusicParameters extends AssetLoaderParameters<Music> {
+    static public class AudioSourceParameters extends AssetLoaderParameters<AudioSource> {
         // Since everything is defined in the file, nothing to do here
     }
 
     /**
-     * Creates a new MusicBufferLoader with an internal file resolver
+     * Creates a new AudioSourceLoader with an internal file resolver
      */
-    public MusicLoader() {
+    public AudioSourceLoader() {
         this(new InternalFileHandleResolver());
     }
 
     /**
-     * Creates a new MusicBufferLoader with the given file resolver
+     * Creates a new AudioSourceLoader with the given file resolver
      *
      * @param resolver    The file resolver
      */
-    public MusicLoader(FileHandleResolver resolver) {
+    public AudioSourceLoader(FileHandleResolver resolver) {
         super(resolver);
     }
 
     /** 
-     * Returns the {@link Music} instance currently loaded by this loader.
+     * Returns the {@link AudioSource} instance currently loaded by this loader.
      *
      * If nothing has been loaded, this returns {@code null}.
      *
-     * @return the {@link Music} instance currently loaded by this loader.
+     * @return the {@link AudioSource} instance currently loaded by this loader.
      */
-    protected Music getLoadedMusic () {
-        return cachedMusic;
+    protected AudioSource getLoadedSource () {
+        return cachedSource;
     }
 
     /** 
@@ -79,8 +78,8 @@ public class MusicLoader extends AsynchronousAssetLoader<Music, MusicLoader.Musi
      * @param params    The parameters to use for loading the asset 
      */
     @Override
-    public void loadAsync (AssetManager manager, String fileName, FileHandle file, MusicParameters params) {
-        cachedMusic = Gdx.audio.newMusic( file );
+    public void loadAsync (AssetManager manager, String fileName, FileHandle file, AudioSourceParameters params) {
+        cachedSource = ((AudioEngine)Gdx.audio).newSource(file);
     }
 
     /** 
@@ -95,10 +94,10 @@ public class MusicLoader extends AsynchronousAssetLoader<Music, MusicLoader.Musi
      * @param params    The parameters to use for loading the asset 
      */
     @Override
-    public Music loadSync (AssetManager manager, String fileName, FileHandle file, MusicParameters params) {
-        Music music = cachedMusic;
-        cachedMusic = null;
-        return music;
+    public AudioSource loadSync (AssetManager manager, String fileName, FileHandle file, AudioSourceParameters params) {
+        AudioSource source = cachedSource;
+        cachedSource = null;
+        return source;
     }
 
     /** 
@@ -114,8 +113,10 @@ public class MusicLoader extends AsynchronousAssetLoader<Music, MusicLoader.Musi
      * @return the other assets this asset requires to be loaded first. 
      */
     @Override
-    public Array<AssetDescriptor> getDependencies (String fileName, FileHandle file, MusicParameters params) {
+    public Array<AssetDescriptor> getDependencies (String fileName, FileHandle file, AudioSourceParameters params) {
         return null;
     }
+
+
 
 }

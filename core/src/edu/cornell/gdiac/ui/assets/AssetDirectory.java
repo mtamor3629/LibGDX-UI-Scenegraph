@@ -31,6 +31,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
+import edu.cornell.gdiac.audio.AudioSource;
+import edu.cornell.gdiac.audio.MusicQueue;
+import edu.cornell.gdiac.audio.SoundEffect;
+//import edu.cornell.gdiac.utils.ResourceManager;
 
 /**
  * An asset manager that uses a JSON file to define its assets.
@@ -44,8 +48,8 @@ import com.badlogic.gdx.utils.ObjectMap;
  * objects.  However, it also requires {@link AssetParser} objects.  An asset parser
  * takes an JSON entry in the directory and instructs the appropriate loader how to
  * load that file.  This class has built in parsers for the classes {@link Texture}, 
- * {@link TextureRegion},  {@link BitmapFont}, {@link Sound}, {@link Music}, and
- * {@link JsonValue}.
+ * {@link TextureRegion},  {@link BitmapFont}, {@link SoundEffect}, {@link MusicQueue},
+ * and {@link JsonValue}.
  *
  * If you wish to add custom assets, you need to add BOTH a custom {@link AssetLoader}
  * and a custom {@link AssetParser} to this manager.  While a type can only have one
@@ -139,13 +143,13 @@ public class AssetDirectory extends AssetManager {
         // Add the default loaders
         topLoader = new DirectoryLoader( resolver );
         setLoader( Index.class, topLoader );
-        setLoader( FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader( resolver ) );
-        setLoader( BitmapFont.class, ".ttf", new FreetypeFontLoader( resolver ) );
-        //setLoader( BitmapFont.class, new BitmapFontLoader( resolver ) ); // fallback
+        setLoader( BitmapFont.class, new BitmapFontLoader( resolver ) ); // fallback
 
-        setLoader( Sound.class, new com.badlogic.gdx.assets.loaders.SoundLoader( resolver ) );
+        setLoader( AudioSource.class, new AudioSourceLoader( resolver ) );
+        setLoader( Sound.class, new SoundLoader( resolver ) );
         setLoader( Music.class, new MusicLoader( resolver ) );
-        setLoader( Music.class, new MusicLoader( resolver ) );
+        setLoader( SoundEffect.class, new SoundBufferLoader( resolver ) );
+        setLoader( MusicQueue.class, new MusicBufferLoader( resolver ) );
 
         setLoader( Pixmap.class, new PixmapLoader( resolver ) );
         setLoader( Texture.class, new TextureLoader( resolver ) );
@@ -160,25 +164,18 @@ public class AssetDirectory extends AssetManager {
         setLoader( PolygonRegion.class, new PolygonRegionLoader( resolver ) );
 
         // And now the default parsers
-        topLoader.addParser( new JsonValueParser() );
         topLoader.addParser( new TextureParser() );
         topLoader.addParser( new TextureRegionParser() );
+        topLoader.addParser( new SoundBufferParser() );
+        topLoader.addParser( new MusicBufferParser() );
         topLoader.addParser( new FreetypeFontParser() );
-        topLoader.addParser( new SoundParser() );
-        topLoader.addParser( new MusicParser() );
-    }
 
-    /**
-     * Returns the progress in percent of completion.
-     *
-     * @return the progress in percent of completion.
-     */
-    public synchronized float getProgress () {
-        // This is a workaround for the problem with getProgress in AssetManager
-        if (getLoadedAssets() == 0) { return 0.0f; }
-        return (float)getLoadedAssets()/(getLoadedAssets()+getQueuedAssets());
+        setLoader( FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader( resolver ) );
+        setLoader( BitmapFont.class, ".ttf", new FreetypeFontLoader( resolver ) );
+        //setLoader( BitmapFont.class, new BitmapFontLoader( resolver ) ); // fallback
+        setLoader( BitmapFont.class, new BitmapFontLoader( resolver ) ); // fallback
     }
-
+    
     /**
      * Returns the file name for the asset directory.
      *
@@ -193,7 +190,7 @@ public class AssetDirectory extends AssetManager {
      * 
      * Each asset must have an associated {@link AssetParser} for this to work.
      * There are default parsers for the classes {@link Texture}, {@link TextureRegion},
-     * {@link BitmapFont}, {@link Sound}, {@link Music}, {@link JsonValue}.
+     * {@link BitmapFont}, {@link SoundEffect}, {@link MusicQueue}, {@link JsonValue}.
      *
      * Any additional asset parsers should be added with the {@link #addParser} method. 
      */
@@ -202,7 +199,6 @@ public class AssetDirectory extends AssetManager {
         params.loadedCallback = callback;
         load( filename, Index.class, params );
     }
-
     
     /**
      * Unloads all assets previously loaded by {@link #loadAssets}.
@@ -262,22 +258,6 @@ public class AssetDirectory extends AssetManager {
      */
     public void removeParser(AssetParser<?> parser) {
         topLoader.removeParser(parser);
-    }
-
-    /**
-     * Returns the asset keys with the given directory
-     *
-     * @return the asset  keys with the given directory
-     */
-    public Array<String> getEntryKeys() {
-        Array<String> result = new Array<String>();
-
-        for(ObjectMap<String, String> value: contents.keymap.values()) {
-            for(String key : value.keys()) {
-                result.add( key );
-            }
-        }
-        return result;
     }
 
     /**
