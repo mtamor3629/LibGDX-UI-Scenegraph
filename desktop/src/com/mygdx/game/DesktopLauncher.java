@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 
+
 import lwjgl3.Lwjgl3Application;
 import lwjgl3.Lwjgl3ApplicationConfiguration;
 
@@ -11,6 +12,7 @@ public class DesktopLauncher {
 		config.setForegroundFPS(60);
 		config.setTitle("My GDX Game");
 		config.setWindowedMode(1280,720);
+		config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
 		new Lwjgl3Application(new MyGdxGame(), config);
 	}
 }
