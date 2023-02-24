@@ -146,8 +146,8 @@ public class AssetDirectory extends AssetManager {
         setLoader( BitmapFont.class, new BitmapFontLoader( resolver ) ); // fallback
 
         setLoader( AudioSource.class, new AudioSourceLoader( resolver ) );
-        setLoader( Sound.class, new SoundLoader( resolver ) );
-        setLoader( Music.class, new MusicLoader( resolver ) );
+        //setLoader( Sound.class, new SoundLoader( resolver ) );
+        //setLoader( Music.class, new MusicLoader( resolver ) );
         setLoader( SoundEffect.class, new SoundBufferLoader( resolver ) );
         setLoader( MusicQueue.class, new MusicBufferLoader( resolver ) );
 
