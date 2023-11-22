@@ -1,4 +1,4 @@
-package edu.cornell.gdiac.ui.nodeParser;
+package edu.cornell.gdiac.ui.nodes;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -6,6 +6,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+/* A subclass of the LibGDX Scene2D Image Actor that supports the use of animation filmstrips as textures.
+*
+* @author Miguel Amor
+* @date 12/14/2023
+* */
 public class Sprite extends Image {
     //LibGDX's Scene2D doesn't have a sprite Actor, so I made one myself
     private TextureRegion[] frames;
@@ -13,7 +18,7 @@ public class Sprite extends Image {
     private TextureRegionDrawable trDrawable;
 
     private TextureRegion[] splitStrip (Texture filmstrip, int span, int cols){
-        //code in this helper function is copied from my CS3152 project
+        //code in this helper function is copied from my CS3152 project with small adjustments to naming conventions, etc.
         //get filmstrip
         TextureRegion[][] tempFrames = TextureRegion.split(filmstrip, filmstrip.getWidth()/cols, filmstrip.getHeight()/(int)(Math.ceil((double)span/(double)cols)));
         TextureRegion[] out = new TextureRegion[span];
@@ -48,6 +53,13 @@ public class Sprite extends Image {
     public Sprite(Texture filmstrip, int span, int startFrame){ this(filmstrip, span, span, startFrame); }
     public Sprite(Texture filmstrip, int startFrame){ this(filmstrip, 1, 1, startFrame); }
 
+    /**
+     * Update this Sprite's filmstrip with a new one
+     * @param filmstrip the filmstrip texture
+     * @param span the number of frames in the filmstrip
+     * @param cols the number of columns in the filmstrip texture
+     * @param startFrame
+     */
     public void updateFilmstrip(Texture filmstrip, int span, int cols, int startFrame){
         /*Fix illegal inputs - will update this once I know how CUGL handles these.
         I based this on behavior listed in CUGL SceneGraph tutorial, but that could
@@ -66,7 +78,14 @@ public class Sprite extends Image {
     public void updateFilmstrip(Texture filmstrip, int span, int startFrame){ updateFilmstrip(filmstrip, span, span, startFrame); }
     public void updateFilmstrip(Texture filmstrip, int startFrame){ updateFilmstrip(filmstrip, 1, 1, startFrame); }
 
-    public void setFrame(int frame){ currentFrame = frame; }
+    /**
+     * Set the animation frame to draw. Out-of-bounds arguments are corrected to be in bounds.
+     * @param frame which frame to draw
+     */
+    public void setFrame(int frame){
+        currentFrame = frame % frames.length;
+        if (frame < 0) currentFrame += frames.length;
+    }
 
     public void draw(Batch batch, float parentAlpha){
         //make sure to set correct animation frame before drawing

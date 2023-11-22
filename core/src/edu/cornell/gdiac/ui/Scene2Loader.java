@@ -10,18 +10,14 @@
 package edu.cornell.gdiac.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import edu.cornell.gdiac.ui.nodeParser.*;
+import edu.cornell.gdiac.ui.widgets.*;
 import edu.cornell.gdiac.ui.nodeParser.*;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
 import edu.cornell.gdiac.ui.widgets.*;
@@ -56,6 +52,12 @@ public class Scene2Loader {
         parsers.add(new LabelParser());
         parsers.add(new NinePatchParser());
         parsers.add(new TextButtonParser(this));
+        parsers.add(new TextFieldParser());
+        parsers.add(new ProgressBarParser());
+        parsers.add(new SpriteParser());
+        parsers.add(new PolyParser());
+        parsers.add(new PathParser());
+        //parsers.add(new WireFrameParser());
 
         widgetList = new HashMap<>();
         manager = new ScriptEngineManager();

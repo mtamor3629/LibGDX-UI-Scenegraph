@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
+import edu.cornell.gdiac.ui.nodes.Sprite;
 
 public class SpriteParser implements NodeParser{
     @Override

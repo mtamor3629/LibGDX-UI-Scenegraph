@@ -3,7 +3,6 @@ package edu.cornell.gdiac.ui.nodeParser;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
-import edu.cornell.gdiac.ui.Scene2Loader;
 
 /**
  * This interface parses an asset of type {@code Actor}. More parsers can be added by implementing this interface and
