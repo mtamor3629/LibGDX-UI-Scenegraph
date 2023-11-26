@@ -1,9 +1,8 @@
 package edu.cornell.gdiac.ui.nodes;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.PolygonRegion;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.Poly2;
@@ -18,6 +17,7 @@ public class PolygonNode extends TexturedNode{
     private Poly2 shape;
     private PolygonRegion region;
     private PathExtruder PE;
+    private TextureRegionDrawable drawable;
 
     /**
      * Initialize with an empty Texture and TextureRegion
@@ -29,11 +29,14 @@ public class PolygonNode extends TexturedNode{
         this.fringe = fringe;
         shape = new Poly2(verts, indices);
         region = shape.makePolyRegion(new TextureRegion());
-        PE = new PathExtruder(verts, true);
+        //drawable = new TextureRegionDrawable(region.getRegion());
+        //might be able to use this to draw a fringe
+        // PE = new PathExtruder(verts, true);
     }
 
     /**
      * Initialize with the given Texture and a corresponding TextureRegion
+     * @param t texture of this PolygonNode
      * @param verts vertices of this PolygonNode
      * @param indices indices from triangulation of this PolygonNode
      * @param fringe fringe width of this PolygonNode
@@ -41,22 +44,35 @@ public class PolygonNode extends TexturedNode{
     public PolygonNode(Texture t, float[] verts, short[] indices, float fringe){
         this.fringe = fringe;
         shape = new Poly2(verts, indices);
-        super.setTexture(t);
+        texture = t;
         region = shape.makePolyRegion(new TextureRegion(t));
-        PE = new PathExtruder(verts, true);
+        drawable = new TextureRegionDrawable(region.getRegion());
+        //might be able to use this to draw a fringe
+        // PE = new PathExtruder(verts, true);
     }
 
     @Override
     public void setTexture(Texture t){
-        super.setTexture(t);
+        texture = t;
         region = shape.makePolyRegion(new TextureRegion(t));
+        //drawable = new TextureRegionDrawable(region.getRegion());
+    }
+
+    public void setShape(float[] verts, short[] indices){
+        shape = new Poly2(verts, indices);
+        region = shape.makePolyRegion(new TextureRegion(texture));
+        //drawable = new TextureRegionDrawable(region.getRegion());
     }
 
     @Override
     public void draw (Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
-        TextureRegion tr = region.getRegion();
-        drawable.draw(batch, tr.getRegionWidth(), tr.getRegionHeight(), tr.getRegionX(), tr.getRegionY());
+        batch.setColor(getColor());
+        //TODO: changing origin seems not to do anything
+        //TODO: make textures tile to fill a larger region
+        ((PolygonSpriteBatch) batch).draw(region, getX(), getY(), getOriginX(), getOriginY(),
+                region.getRegion().getRegionWidth(), region.getRegion().getRegionHeight(),
+                getScaleX(), getScaleY(), getRotation());
         //if fringe width is below a small epsilon, don't waste time calculating/drawing it
         if(fringe <= 0.0001) return;
         //TODO: use path extruder to compute fringe and draw it. How can I make it fade out?

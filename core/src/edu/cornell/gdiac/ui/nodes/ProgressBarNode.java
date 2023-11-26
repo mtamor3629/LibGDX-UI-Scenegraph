@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.ui.nodes;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -17,13 +18,13 @@ public class ProgressBarNode extends ProgressBar {
     able to draw the caps. The CUGL scenegraph tutorial implies that vertical progress bars
     are not allowed, so I set vertical to false. It also implies that there are no knobs on
     progress bars and that there is only one foreground texture (the one before the knob).*/
-    private Drawable rCap, lCap;
+    private TextureRegion rCap, lCap;
     public ProgressBarNode(float min, float max, float stepSize, Skin skin){
         super(min, max, stepSize, false, skin);
     }
     public ProgressBarNode(float min, float max, float stepSize, Skin skin, String styleName){ super(min, max, stepSize, false, skin, styleName); }
     public ProgressBarNode(float min, float max, float stepSize, ProgressBarStyle style){ super(min, max, stepSize, false, style); }
-    public void setCaps (Drawable rCap, Drawable lCap){
+    public void setCaps (TextureRegion rCap, TextureRegion lCap){
         this.rCap=rCap;
         this.lCap=lCap;
     }
@@ -32,7 +33,12 @@ public class ProgressBarNode extends ProgressBar {
         //This assumes that the centers of the caps align with the edges of the progress bar.
         //I intend to correct this to align with CUGL once I am able to confirm how they behave there.
         //Will likely need to adjust this to accommodate rotation of the root node
-        if (rCap != null) rCap.draw(batch, getX()+getWidth()/2f, getY(), rCap.getMinWidth(), getHeight());
-        if (lCap != null) lCap.draw(batch, getX()-getWidth()/2f, getY(), lCap.getMinWidth(), getHeight());
+        //TODO: why are the caps stretched?
+        if (rCap != null)
+            batch.draw(rCap, getX()+getWidth()-rCap.getRegionWidth()/2, getY(), rCap.getRegionWidth(),
+                    rCap.getRegionHeight());
+        if (lCap != null)
+            batch.draw(lCap, getX()-lCap.getRegionWidth()/2, getY(), lCap.getRegionWidth(),
+                    lCap.getRegionHeight());
     }
 }

@@ -15,10 +15,13 @@ public class TextFieldParser implements NodeParser {
     public Actor process(JsonValue json, AssetDirectory assetDirectory, float scaleX, float scaleY, Actor parent) {
         JsonValue data = json.get("data");
         TextField.TextFieldStyle tfStyle = new TextField.TextFieldStyle();
-        tfStyle.font = assetDirectory.getEntry(data.getString("font"), BitmapFont.class);
-        JsonValue color = data.get("foreground");
-        if (color != null)
-            tfStyle.fontColor = new Color(color.getInt(0), color.getInt(1), color.getInt(2), color.getInt(3));
-        return new TextField(data.getString("text"), tfStyle);
+        if (data.has("font")) tfStyle.font = assetDirectory.getEntry(data.getString("font"), BitmapFont.class);
+        int[] color = data.get("foreground").asIntArray();
+        if (color.length >= 4)
+            tfStyle.fontColor = new Color(color[0]/255f, color[1]/255f, color[2]/255f, color[3]/255f);
+        //TODO: handle background, padding, halign, valign, cursor
+        // and use event listener
+        TextField node = new TextField(data.getString("text", ""), tfStyle);
+        return node;
     }
 }

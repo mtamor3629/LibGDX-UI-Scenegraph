@@ -10,6 +10,7 @@
 package edu.cornell.gdiac.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -177,9 +178,10 @@ public class Scene2Loader {
             }
             JsonValue jsAnchor = data.get("anchor");
             if (jsAnchor != null) {
-                node.setOrigin(jsAnchor.getFloat(0), jsAnchor.getFloat(1));
+                node.setOrigin(jsAnchor.getFloat(0)*node.getWidth(), jsAnchor.getFloat(1)*node.getHeight());
             }
 
+            //TODO: this seems to not do anything for polygons, so I set scale manually in the parser
             JsonValue jsScale = data.get("scale");
             if (jsScale != null) {
                 if (jsScale.size < 2) {
@@ -192,10 +194,15 @@ public class Scene2Loader {
                 }
 
             }
+            //TODO: angle seems to not cause rotation for buttons, it just stops the down texture from being drawn
             if (data.has("angle"))
                 node.setRotation(data.getFloat("angle"));
             if (data.has("visible"))
                 node.setVisible(data.getBoolean("visible"));
+
+            JsonValue color = data.get("color");
+            if (color!=null)
+                node.setColor(new Color(color.getInt(0)/255f, color.getInt(1)/255f, color.getInt(2)/255f, color.getInt(3)/255f));
         }
 
         //fix scaling issue with respect to parent
@@ -207,7 +214,7 @@ public class Scene2Loader {
         System.out.println("putting "+name+" into manager");
 
         //Convert to group if in the node is not a group for adding children
-        if((hasChild && !(node instanceof Group))){
+        if(((hasChild || layoutWidget !=null) && !(node instanceof Group))){
             Group g = new Group();
             g.addActor(node);
             g.setSize(node.getWidth(), node.getHeight());

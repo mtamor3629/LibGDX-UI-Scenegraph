@@ -14,7 +14,13 @@
         },
         "right": {
             "file":   "textures/right_arrow.png"
-        }
+        },
+		"progress_bg": {
+			"file": "textures/progress_bg.png"
+		},
+		"progress_fg": {
+			"file": "textures/progress_fg.png"
+		}
 	},
 	"fonts": {
 		"gyparody": {
@@ -104,6 +110,41 @@
 								"variables" : {
 									"text": "sdfdsfds"
 								}
+							}
+						},
+						"pBar" : {
+							"type" : "Progress",
+							"format" : {
+								"type" : "Anchored"
+							},
+							"data" : {
+								"left_cap" : "left",
+								"right_cap" : "right",
+								"foreground" : "progress_fg",
+								"background" : "progress_bg"
+							},
+							"layout" : {
+								"x_anchor" : "center",
+								"y_anchor" : "bottom"
+							}
+						},
+						"rectangle" : {
+							"type" : "Poly",
+							"format" : {
+								"type" : "Anchored"
+							},
+							"data" : {
+								"polygon" : {
+									"vertices" : [0,0,320,0,320,86,0,86],
+									"triangulator" : "earclip"
+								},
+								"color" : [255,0,255,255],
+								"texture" : "progress_fg",
+								"scale" : 1
+							},
+							"layout" : {
+								"x_anchor" : "right",
+								"y_anchor" : "center"
 							}
 						}
 					},

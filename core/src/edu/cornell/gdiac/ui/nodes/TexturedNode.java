@@ -7,10 +7,21 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public abstract class TexturedNode extends Widget {
+    protected Texture texture;
     protected Drawable drawable;
-    private boolean _flipHorizontal, _flipVertical;
-
-    public void setTexture (Texture t) { drawable = new TextureRegionDrawable(new TextureRegion(t)); }
-    public void flipHorizontal(boolean flip) { _flipHorizontal = flip; }
-    public void flipVertical(boolean flip) { _flipVertical = flip; }
+    protected boolean _flipHorizontal, _flipVertical;
+    public void setTexture (Texture t) {
+        texture = t;
+        drawable = new TextureRegionDrawable(new TextureRegion(t));
+    }
+    public void flipHorizontal(boolean flip) {
+        _flipHorizontal = flip;
+        float scl = flip ? -1*Math.abs(getScaleX()) : Math.abs(getScaleX());
+        setScaleX(scl);
+    }
+    public void flipVertical(boolean flip) {
+        _flipVertical = flip;
+        float scl = flip ? -1*Math.abs(getScaleY()) : Math.abs(getScaleY());
+        setScaleY(scl);
+    }
 }

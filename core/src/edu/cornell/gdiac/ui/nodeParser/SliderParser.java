@@ -1,7 +1,10 @@
 package edu.cornell.gdiac.ui.nodeParser;
 
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
 
@@ -43,15 +46,21 @@ public class SliderParser implements NodeParser{
         if (tick < 0) tick = defTick;
         //should snap default to false?
         boolean snap = data.getBoolean("snap", false);
-        // JsonValue knob = data.get("knob");
-        // JsonValue path = data.get("path");
-        Slider s = new Slider(range[0], range[1], tick, false, new Slider.SliderStyle());
+        /* to be used if I have time for the full slider implementation
+        JsonValue knob = data.get("knob");
+        JsonValue path = data.get("path");*/
+        //TODO: how do I make a plain colored background so that the slider is not invisible?
+        Slider.SliderStyle sStyle = new Slider.SliderStyle();
+        Slider s = new Slider(range[0], range[1], tick, false, sStyle);
         if (snap){
             int valsLen = (int) Math.ceil((range[1]-range[0])/tick);
             float[] values = new float[valsLen];
             for(int i = 0; i < valsLen; i++) values[i] = range[0] + i*((range[1]-range[0])/valsLen);
             s.setSnapToValues(values, ((range[1]-range[0])/valsLen)/2f);
         }
+        s.setValue(value);
+        s.setBounds(bounds[0],bounds[1],bounds[2],bounds[3]);
+        //TODO: make use of event listener
         return s;
     }
 }

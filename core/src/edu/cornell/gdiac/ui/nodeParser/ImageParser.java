@@ -22,14 +22,14 @@ public class ImageParser implements NodeParser{
         //how do Images differ from normal PolygonNodes?
 
         //TexturedNode data
-        String flip = data.getString("flip");
+        String flip = data.getString("flip", "");
         if (flip.equals("horizontal")) node.setScaleX(-node.getScaleX());
         else if (flip.equals("vertical")) node.setScaleY(-node.getScaleY());
         else if (flip.equals("both")) {
             node.setScaleX(-node.getScaleX());
             node.setScaleY(-node.getScaleY());
         }
-        //TODO: handle blending, gradients, and absolute coordinates
+        //TODO: handle blending, gradients, and absolute coordinates, fix flip
         return node;
     }
 }
