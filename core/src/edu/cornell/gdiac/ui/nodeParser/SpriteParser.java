@@ -16,9 +16,20 @@ public class SpriteParser implements NodeParser{
         Texture t = assetDirectory.getEntry(data.getString("texture"), Texture.class);
         int span = data.getInt("span", 1);
         int cols = data.getInt("cols", span);
-        //will update this once I confirm what the start frame defaults to in CUGL,
-        //but I think that 0 is a safe assumption
         int frame = data.getInt("frame", 0);
-        return new Sprite(t, span, cols, frame);
+
+        Sprite node = new Sprite(t, span, cols, frame);
+        node.setSize(t.getWidth()/cols,t.getHeight()*cols/span);
+
+        //TexturedNode data
+        String flip = data.getString("flip", "");
+        if (flip.equals("horizontal")) node.setScaleX(-node.getScaleX());
+        else if (flip.equals("vertical")) node.setScaleY(-node.getScaleY());
+        else if (flip.equals("both")) {
+            node.setScaleX(-node.getScaleX());
+            node.setScaleY(-node.getScaleY());
+        }
+        //TODO: handle blending, gradients, and absolute coordinates, fix flip
+        return node;
     }
 }

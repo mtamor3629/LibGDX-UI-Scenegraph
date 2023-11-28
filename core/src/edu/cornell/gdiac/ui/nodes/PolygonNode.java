@@ -17,7 +17,6 @@ public class PolygonNode extends TexturedNode{
     private Poly2 shape;
     private PolygonRegion region;
     private PathExtruder PE;
-    private TextureRegionDrawable drawable;
 
     /**
      * Initialize with an empty Texture and TextureRegion
@@ -29,7 +28,6 @@ public class PolygonNode extends TexturedNode{
         this.fringe = fringe;
         shape = new Poly2(verts, indices);
         region = shape.makePolyRegion(new TextureRegion());
-        //drawable = new TextureRegionDrawable(region.getRegion());
         //might be able to use this to draw a fringe
         // PE = new PathExtruder(verts, true);
     }
@@ -46,7 +44,6 @@ public class PolygonNode extends TexturedNode{
         shape = new Poly2(verts, indices);
         texture = t;
         region = shape.makePolyRegion(new TextureRegion(t));
-        drawable = new TextureRegionDrawable(region.getRegion());
         //might be able to use this to draw a fringe
         // PE = new PathExtruder(verts, true);
     }
@@ -55,15 +52,24 @@ public class PolygonNode extends TexturedNode{
     public void setTexture(Texture t){
         texture = t;
         region = shape.makePolyRegion(new TextureRegion(t));
-        //drawable = new TextureRegionDrawable(region.getRegion());
     }
 
     public void setShape(float[] verts, short[] indices){
         shape = new Poly2(verts, indices);
         region = shape.makePolyRegion(new TextureRegion(texture));
-        //drawable = new TextureRegionDrawable(region.getRegion());
     }
 
+    public void setShape(Poly2 newPoly){
+        shape = newPoly;
+        region = shape.makePolyRegion(new TextureRegion(texture));
+    }
+
+    /**
+     * Draw this PolygonNode
+     * @param batch Must be an instance of PolygonSpriteBatch
+     * @param parentAlpha The parent alpha, to be multiplied with this actor's alpha, allowing the parent's alpha to affect all
+     *           children.
+     */
     @Override
     public void draw (Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);

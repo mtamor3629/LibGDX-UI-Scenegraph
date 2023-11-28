@@ -20,6 +20,9 @@
 		},
 		"progress_fg": {
 			"file": "textures/progress_fg.png"
+		},
+		"sample_sprite": {
+			"file": "textures/sample_sprite.png"
 		}
 	},
 	"fonts": {
@@ -146,11 +149,87 @@
 								"x_anchor" : "right",
 								"y_anchor" : "center"
 							}
+						},
+						"wire" : {
+							"type" : "Wire",
+							"format" : {
+								"type" : "Anchored"
+							},
+							"data" : {
+								"polygon" : {
+									"vertices" : [20,10,300,10,300,33,20,33],
+									"triangulator" : "earclip"
+								},
+								"traversal" : "interior",
+								"color" : [255,0,255,255],
+								"texture" : "progress_fg",
+								"scale" : 1
+							},
+							"layout" : {
+								"x_anchor" : "left",
+								"y_anchor" : "center"
+							}
+						},
+						"path" : {
+							"type" : "Path",
+							"format" : {
+								"type" : "Anchored"
+							},
+							"data" : {
+								"color" : [255,0,255,255],
+								"texture" : "progress_fg",
+								"path" : {
+									"vertices" : [30,10,290,10,290,33,30,33],
+									"closed" : false
+								},
+								"stroke" : 5,
+								"joint" : "round",
+								"endcap" : "round",
+								"angle" : 135
+							},
+							"layout" : {
+								"x_anchor" : "center",
+								"y_anchor" : "bottom"
+							}
 						}
 					},
 					"layout" : {
 						"x_anchor" : "center",
 						"y_anchor" : "top"
+					}
+				},
+				"sprite1" : {
+					"type" : "Sprite",
+					"format" : {
+						"type" : "Anchored"
+					},
+					"data" : {
+						"texture" : "sample_sprite",
+						"span" : 15,
+						"cols" : 5,
+						"frame" : 5,
+						"scale" : 0.2
+					},
+					"layout" : {
+						"x_anchor" : "left",
+						"y_anchor" : "bottom"
+					}
+				},
+				"sprite2" : {
+					"type" : "Sprite",
+					"format" : {
+						"type" : "Anchored"
+					},
+					"data" : {
+						"texture" : "sample_sprite",
+						"span" : 15,
+						"cols" : 5,
+						"frame" : 10,
+						"scale" : 0.2
+					},
+					"layout" : {
+						"x_anchor" : "center",
+						"y_anchor" : "bottom"
 					}
 				}
             }

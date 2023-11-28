@@ -88,6 +88,7 @@ public class Sprite extends Image {
     }
 
     public void draw(Batch batch, float parentAlpha){
+        //TODO: do I need to keep track of elapsed time here or should I leave that to the programmer?
         //make sure to set correct animation frame before drawing
         trDrawable.setRegion(frames[currentFrame]);
         super.setDrawable(trDrawable);
