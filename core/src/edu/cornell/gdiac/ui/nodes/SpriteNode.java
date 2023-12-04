@@ -1,10 +1,12 @@
 package edu.cornell.gdiac.ui.nodes;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import edu.cornell.gdiac.util.FilmStrip;
 
 /** A subclass of the LibGDX Scene2D Image Actor that supports the use of animation filmstrips as textures.
 *  This does not animate the sprite, it only stores the set of animation frames. Updating which animation
@@ -14,25 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 * */
 public class SpriteNode extends Image {
     //LibGDX's Scene2D doesn't have a sprite Actor, so I made one myself
-    private TextureRegion[] frames;
-    private int currentFrame;
-    private TextureRegionDrawable trDrawable;
-
-    private TextureRegion[] splitStrip (Texture filmstrip, int span, int cols){
-        //code in this helper function is copied from my CS3152 project with small adjustments to naming conventions, etc.
-        //get filmstrip
-        TextureRegion[][] tempFrames = TextureRegion.split(filmstrip, filmstrip.getWidth()/cols, filmstrip.getHeight()/(int)(Math.ceil((double)span/(double)cols)));
-        TextureRegion[] out = new TextureRegion[span];
-        //order frames properly and place in array
-        int index = 0;
-        for (int i=0; i<tempFrames.length; i++) {
-            for (int j = 0; j < tempFrames[0].length; j++) {
-                out[index] = tempFrames[i][j];
-                index++;
-            }
-        }
-        return out;
-    }
+    private FilmStrip filmstrip;
 
     public SpriteNode(Texture filmstrip, int span, int cols, int startFrame){
         super();
@@ -44,12 +28,10 @@ public class SpriteNode extends Image {
         if (cols > span) cols = span;
         startFrame = startFrame % span;
         if (startFrame < 0) startFrame += span;
-        //set starting values
-        frames = splitStrip(filmstrip, span, cols);
-        currentFrame = startFrame;
-        trDrawable = new TextureRegionDrawable(frames[currentFrame]);
-        setDrawable(trDrawable);
-        setSize(frames[currentFrame].getRegionWidth(), frames[currentFrame].getRegionHeight());
+
+        this.filmstrip = new FilmStrip(filmstrip, span/cols, cols, span);
+        this.filmstrip.setFrame(startFrame);
+        setSize(this.filmstrip.getRegionWidth()/cols, this.filmstrip.getRegionHeight()/(int)(Math.ceil((double)span/(double)cols)));
     }
     public SpriteNode(Texture filmstrip, int span, int startFrame){ this(filmstrip, span, span, startFrame); }
     public SpriteNode(Texture filmstrip, int startFrame){ this(filmstrip, 1, 1, startFrame); }
@@ -70,28 +52,23 @@ public class SpriteNode extends Image {
         if (cols > span) cols = span;
         startFrame = startFrame % span;
         if (startFrame < 0) startFrame += span;
-        //set values
-        frames = splitStrip(filmstrip, span, cols);
-        currentFrame = startFrame;
-        trDrawable.setRegion(frames[currentFrame]);
-        setSize(frames[currentFrame].getRegionWidth(), frames[currentFrame].getRegionHeight());
+
+        this.filmstrip = new FilmStrip(filmstrip, span/cols, cols, span);
+        this.filmstrip.setFrame(startFrame);
+        setSize(this.filmstrip.getRegionWidth()/cols, this.filmstrip.getRegionHeight()/(int)(Math.ceil((double)span/(double)cols)));
     }
     public void updateFilmstrip(Texture filmstrip, int span, int startFrame){ updateFilmstrip(filmstrip, span, span, startFrame); }
     public void updateFilmstrip(Texture filmstrip, int startFrame){ updateFilmstrip(filmstrip, 1, 1, startFrame); }
 
     /**
-     * Set the animation frame to draw. Out-of-bounds arguments are corrected to be in bounds.
+     * Set the animation frame to draw. Out-of-bounds arguments raise an error.
      * @param frame which frame to draw
      */
-    public void setFrame(int frame){
-        currentFrame = frame % frames.length;
-        if (frame < 0) currentFrame += frames.length;
-    }
+    public void setFrame(int frame){ filmstrip.setFrame(frame); }
 
     public void draw(Batch batch, float parentAlpha){
-        //make sure to set correct animation frame before drawing
-        trDrawable.setRegion(frames[currentFrame]);
-        super.setDrawable(trDrawable);
-        super.draw(batch, parentAlpha);
+        batch.setColor(getColor());
+        batch.draw(filmstrip, getX(), getY(), getOriginX(), getOriginY(),
+                getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
     }
 }
