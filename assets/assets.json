@@ -142,7 +142,6 @@
 									"triangulator" : "earclip"
 								},
 								"color" : [255,0,255,255],
-								"texture" : "progress_fg",
 								"scale" : 1
 							},
 							"layout" : {
@@ -162,7 +161,6 @@
 								},
 								"traversal" : "interior",
 								"color" : [255,0,255,255],
-								"texture" : "progress_fg",
 								"scale" : 1
 							},
 							"layout" : {
@@ -177,7 +175,6 @@
 							},
 							"data" : {
 								"color" : [255,0,255,255],
-								"texture" : "progress_fg",
 								"path" : {
 									"vertices" : [30,10,290,10,290,33,30,33],
 									"closed" : false

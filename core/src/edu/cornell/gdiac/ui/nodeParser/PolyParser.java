@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.ui.nodeParser;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.DelaunayTriangulator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -7,6 +9,8 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.math.PolyTriangulator;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
 import edu.cornell.gdiac.ui.nodes.PolygonNode;
+import edu.cornell.gdiac.ui.nodes.TexturedNode;
+import edu.cornell.gdiac.ui.nodes.WireNode;
 
 public class PolyParser implements NodeParser{
     //the earclipping triangulator from the Shapes demo
@@ -47,13 +51,13 @@ public class PolyParser implements NodeParser{
         float[] verts = null;
         short[] indices = null;
         PolygonNode node;
-        Texture t = null;
 
+        Texture t;
         if (data.has("texture")){
             t = assetDirectory.getEntry(data.getString("texture"), Texture.class);
             //if polygon is missing, use a rectangle the size of the texture
             if (poly == null) verts = new float[]{0, 0, t.getWidth(), 0, t.getWidth(), t.getHeight(), 0, t.getHeight()};
-        }
+        } else t = TexturedNode.defaultTexture();
 
         if (poly != null && poly.isArray()) {
             //if polygon not empty and is array
@@ -93,8 +97,7 @@ public class PolyParser implements NodeParser{
         if (data.has("fringe") && data.get("fringe").isNumber()) fringe = data.getFloat("fringe");
 
 
-        if (t != null) node = new PolygonNode(t, verts, indices, fringe);
-        else /*TODO: use a blank texture*/ node = new PolygonNode(verts, indices, fringe);
+        node = new PolygonNode(t, verts, indices, fringe);
 
         node.setScaleX(sclX);
         node.setScaleY(sclY);

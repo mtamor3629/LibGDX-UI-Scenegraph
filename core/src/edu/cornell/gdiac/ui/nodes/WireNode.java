@@ -25,6 +25,7 @@ public class WireNode extends TexturedNode {
     private Poly2.Traversal traversal;
     private Path2[] wireframe;
     private float stroke = 5f;
+    private float fringe;
 
     /**
      * Initialize with the given Texture
@@ -36,9 +37,10 @@ public class WireNode extends TexturedNode {
      *                  will be interpreted as the list of segments. Must be of even length.
      * @param traversal the traversal algorithm to use
      */
-    public WireNode(Texture t, float[] verts, short[] indices, @Null short[] wireframe, String traversal) {
+    public WireNode(Texture t, float[] verts, short[] indices, @Null short[] wireframe, String traversal, float fringe) {
         shape = new Poly2(verts, indices);
         texture = t;
+        this.fringe = fringe;
 
         setTraversal(traversal);
         setWireframe(wireframe);
@@ -53,8 +55,9 @@ public class WireNode extends TexturedNode {
      *                  will be interpreted as the list of segments. Must be of even length.
      * @param traversal the traversal algorithm to use
      */
-    public WireNode(float[] verts, short[] indices, @Null short[] wireframe, String traversal) {
+    public WireNode(float[] verts, short[] indices, @Null short[] wireframe, String traversal, float fringe) {
         shape = new Poly2(verts, indices);
+        this.fringe = fringe;
 
         setTraversal(traversal);
         setWireframe(wireframe);

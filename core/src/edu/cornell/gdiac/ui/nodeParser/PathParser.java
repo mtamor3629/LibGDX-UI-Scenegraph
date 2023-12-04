@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.ui.nodeParser;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
 import edu.cornell.gdiac.ui.nodes.PathNode;
 import edu.cornell.gdiac.ui.nodes.PolygonNode;
+import edu.cornell.gdiac.ui.nodes.TexturedNode;
 
 /**
  * A simple path Actor to be used along with the LibGDX Scene2D scenegraph
@@ -32,8 +34,9 @@ public class PathParser implements NodeParser{
         int[] corners;
         boolean closed;
 
-        Texture t = null;
+        Texture t;
         if (data.has("texture")) t = assetDirectory.getEntry(data.getString("texture"), Texture.class);
+        else t = TexturedNode.defaultTexture();
 
         if(path != null && path.isArray()) {
             //if path not empty and is array

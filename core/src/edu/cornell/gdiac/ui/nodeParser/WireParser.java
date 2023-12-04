@@ -1,12 +1,16 @@
 package edu.cornell.gdiac.ui.nodeParser;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.math.DelaunayTriangulator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.math.PolyTriangulator;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
 import edu.cornell.gdiac.ui.nodes.PolygonNode;
+import edu.cornell.gdiac.ui.nodes.TexturedNode;
 import edu.cornell.gdiac.ui.nodes.WireNode;
 
 public class WireParser implements NodeParser{
@@ -36,7 +40,7 @@ public class WireParser implements NodeParser{
             t = assetDirectory.getEntry(data.getString("texture"), Texture.class);
             //if polygon is missing, use a rectangle the size of the texture
             if (poly == null) verts = new float[]{0, 0, t.getWidth(), 0, t.getWidth(), t.getHeight(), 0, t.getHeight()};
-        }
+        } else t = TexturedNode.defaultTexture();
 
         if (poly != null && poly.isArray()) {
             //if polygon not empty and is array
@@ -75,9 +79,7 @@ public class WireParser implements NodeParser{
         float fringe = 0;
         if (data.has("fringe") && data.get("fringe").isNumber()) fringe = data.getFloat("fringe");
 
-        WireNode node;
-        if (t != null) node = new WireNode(t, verts, indices, wireframe, traversal);
-        else /*TODO: use a blank texture*/ node = new WireNode(verts, indices, wireframe, traversal);
+        WireNode node = new WireNode(t, verts, indices, wireframe, traversal, fringe);
 
         //TexturedNode data
         String flip = data.getString("flip", "");
