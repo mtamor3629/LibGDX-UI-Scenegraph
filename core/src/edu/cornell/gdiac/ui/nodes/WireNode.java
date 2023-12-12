@@ -11,6 +11,8 @@ import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.PathFactory;
 import edu.cornell.gdiac.math.Poly2;
 
+import java.util.Arrays;
+
 /**
  * A simple wireframe Actor to be used along with the LibGDX Scene2D scenegraph
  * @author Miguel Amor
@@ -44,6 +46,9 @@ public class WireNode extends TexturedNode {
 
         setTraversal(traversal);
         setWireframe(wireframe);
+        setSize(shape.getBounds().width, shape.getBounds().height);
+        PE.setEndCap(Poly2.EndCap.BUTT);
+        PE.setJoint(Poly2.Joint.SQUARE);
     }
 
     /**
@@ -61,6 +66,8 @@ public class WireNode extends TexturedNode {
 
         setTraversal(traversal);
         setWireframe(wireframe);
+        PE.setEndCap(Poly2.EndCap.BUTT);
+        PE.setJoint(Poly2.Joint.SQUARE);
     }
 
     @Override
@@ -73,17 +80,21 @@ public class WireNode extends TexturedNode {
     public void setShape(float[] verts, short[] indices){
         shape = new Poly2(verts, indices);
         this.wireframe = PF.makeTraversal(shape, this.traversal);
+        setSize(shape.getBounds().width*getScaleX(), shape.getBounds().height*getScaleY());
     }
 
     public void setShape(Poly2 newPoly){
         shape = newPoly;
         this.wireframe = PF.makeTraversal(shape, this.traversal);
+        setSize(shape.getBounds().width*getScaleX(), shape.getBounds().height*getScaleY());
     }
 
     /**
      * Update the traversal algorithm. DOES NOT compute a new wireframe to draw.
      * To compute the new wireframe, call {@code traverse()}
-     * @param traversal a String representing the new traversal algorithm
+     * @param traversal A String representing the new traversal algorithm. Should
+     *                  be one of "none", "open", "closed", or "interior". Other
+     *                  values default to an interior traversal.
      */
     public void setTraversal(String traversal){
         if (traversal.equals("none")) this.traversal = Poly2.Traversal.NONE;
@@ -92,6 +103,9 @@ public class WireNode extends TexturedNode {
             //default to interior if string is illegal
         else this.traversal = Poly2.Traversal.INTERIOR;
         this.wireframe = PF.makeTraversal(shape, this.traversal);
+        for (Path2 path : wireframe){
+
+        }
     }
 
     /**
@@ -110,17 +124,19 @@ public class WireNode extends TexturedNode {
         else {
             this.wireframe = new Path2[wireframe.length/2];
             // the Path2 constructor copies the input array, so we can reuse a temp array to save space
-            float[] temp = new float[2];
+            float[] temp = new float[4];
             for(int i = 0; i < wireframe.length; i+=2){
-                temp[0] = shape.vertices[wireframe[i]];
-                temp[1] = shape.vertices[wireframe[i+1]];
+                temp[0] = shape.vertices[2*wireframe[i]];
+                temp[1] = shape.vertices[2*wireframe[i]+1];
+                temp[2] = shape.vertices[2*wireframe[i+1]];
+                temp[3] = shape.vertices[2*wireframe[i+1]+1];
                 this.wireframe[i/2] = new Path2(temp);
             }
         }
     }
 
     /**
-     * Update the stroke width of the wireframe
+     * Update the stroke width of the wireframe. Default value is 5
      * @param stroke
      */
     public void setStroke(float stroke){ this.stroke = stroke;}
@@ -135,15 +151,14 @@ public class WireNode extends TexturedNode {
     public void draw (Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
         batch.setColor(getColor());
-        //TODO: changing origin seems not to do anything
-        //TODO: make textures tile to fill a larger region
         for (Path2 segment : wireframe) {
             PE.set(segment);
             //TODO: what should the stroke width be? Also, recalculating every time might(?) be too slow
             PE.calculate(stroke);
             region = PE.getPolygon().makePolyRegion(new TextureRegion(texture));
-            ((PolygonSpriteBatch) batch).draw(region, getX(), getY(), getOriginX(), getOriginY(),
-                    region.getRegion().getRegionWidth(), region.getRegion().getRegionHeight(),
+            //TODO: fix origin
+            ((PolygonSpriteBatch) batch).draw(region, getX(), getY(), getScaleX()*getOriginX(), getScaleY()*getOriginY(),
+                   region.getRegion().getRegionWidth(), region.getRegion().getRegionHeight(),
                     getScaleX(), getScaleY(), getRotation());
         }
     }

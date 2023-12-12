@@ -21,7 +21,10 @@ public class ImageParser implements NodeParser{
         JsonValue data = json.get("data");
 
         Texture t;
-        if (data.has("texture")) t = assetDirectory.getEntry(data.getString("texture"), Texture.class);
+        if (data.has("texture")) {
+            t = assetDirectory.getEntry(data.getString("texture"), Texture.class);
+            t.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        }
         else t = TexturedNode.defaultTexture();
 
         Actor node = new Image(t);

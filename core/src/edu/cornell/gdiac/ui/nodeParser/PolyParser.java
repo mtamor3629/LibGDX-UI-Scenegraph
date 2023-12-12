@@ -37,24 +37,15 @@ public class PolyParser implements NodeParser{
         JsonValue data = json.get("data");
         JsonValue poly = data.get("polygon");
 
-        float sclX = 1.0f, sclY = 1.0f;
-        if (data.has("scale")){
-            if (data.get("scale").size < 2) sclX = sclY = data.getFloat("scale");
-            else {
-                JsonValue scl = data.get("scale");
-                sclX = scl.getFloat(0);
-                sclY = scl.getFloat(1);
-            }
-        }
-
-
         float[] verts = null;
         short[] indices = null;
         PolygonNode node;
+        PT.clear();
 
         Texture t;
         if (data.has("texture")){
             t = assetDirectory.getEntry(data.getString("texture"), Texture.class);
+            t.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
             //if polygon is missing, use a rectangle the size of the texture
             if (poly == null) verts = new float[]{0, 0, t.getWidth(), 0, t.getWidth(), t.getHeight(), 0, t.getHeight()};
         } else t = TexturedNode.defaultTexture();
@@ -98,9 +89,6 @@ public class PolyParser implements NodeParser{
 
 
         node = new PolygonNode(t, verts, indices, fringe);
-
-        node.setScaleX(sclX);
-        node.setScaleY(sclY);
 
         //TexturedNode data
         String flip = data.getString("flip", "");

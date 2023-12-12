@@ -18,13 +18,13 @@ public abstract class TexturedNode extends Widget {
     }
     public void flipHorizontal(boolean flip) {
         _flipHorizontal = flip;
-        float scl = flip ? -1*Math.abs(getScaleX()) : Math.abs(getScaleX());
-        setScaleX(scl);
+//        float scl = flip ? -1*Math.abs(getScaleX()) : Math.abs(getScaleX());
+//        setScaleX(scl);
     }
     public void flipVertical(boolean flip) {
         _flipVertical = flip;
-        float scl = flip ? -1*Math.abs(getScaleY()) : Math.abs(getScaleY());
-        setScaleY(scl);
+//        float scl = flip ? -1*Math.abs(getScaleY()) : Math.abs(getScaleY());
+//        setScaleY(scl);
     }
 
     /**

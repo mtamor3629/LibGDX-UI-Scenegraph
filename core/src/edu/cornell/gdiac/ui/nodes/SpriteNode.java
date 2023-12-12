@@ -67,7 +67,7 @@ public class SpriteNode extends Image {
     public void setFrame(int frame){ filmstrip.setFrame(frame); }
 
     public void draw(Batch batch, float parentAlpha){
-        batch.setColor(getColor());
+        batch.setColor(getColor().r, getColor().g, getColor().b, getColor().a*parentAlpha);
         batch.draw(filmstrip, getX(), getY(), getOriginX(), getOriginY(),
                 getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
     }

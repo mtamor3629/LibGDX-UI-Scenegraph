@@ -17,7 +17,11 @@ public class LabelParser implements NodeParser{
     public Actor process(JsonValue json, AssetDirectory assetDirectory, float scaleX, float scaleY, Actor parent) {
         JsonValue data = json.get("data");
         Label.LabelStyle lStyle = new Label.LabelStyle();
-        lStyle.font = assetDirectory.getEntry(data.getString("font"), BitmapFont.class);
+        if (data.has("font")) {
+            BitmapFont b = assetDirectory.getEntry(data.getString("font"), BitmapFont.class);
+            b.getData().setScale(scaleX, scaleY);
+            lStyle.font = b;
+        }
         JsonValue color = data.get("foreground");
         if (color != null)
             lStyle.fontColor = new Color(color.getInt(0), color.getInt(1), color.getInt(2), color.getInt(3));

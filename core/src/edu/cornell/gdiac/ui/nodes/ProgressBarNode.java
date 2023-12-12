@@ -28,6 +28,7 @@ public class ProgressBarNode extends ProgressBar {
         this.rCap=rCap;
         this.lCap=lCap;
     }
+    @Override
     public void draw(Batch batch, float parentAlpha){
         super.draw(batch, parentAlpha);
         //This assumes that the centers of the caps align with the edges of the progress bar.

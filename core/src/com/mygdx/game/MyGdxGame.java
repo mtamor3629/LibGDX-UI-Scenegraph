@@ -57,6 +57,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		ScreenUtils.clear(1, 1, 1, 1);
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
+		stage.act();
 	}
 	
 	@Override

@@ -54,11 +54,13 @@ public class Scene2Loader {
         parsers.add(new NinePatchParser());
         parsers.add(new TextButtonParser(this));
         parsers.add(new TextFieldParser());
+        parsers.add(new SliderParser(this));
         parsers.add(new ProgressBarParser());
         parsers.add(new SpriteParser());
         parsers.add(new PolyParser());
         parsers.add(new PathParser());
         parsers.add(new WireParser());
+        parsers.add(new ScrollPaneParser(this));
 
         widgetList = new HashMap<>();
         manager = new ScriptEngineManager();
@@ -166,22 +168,21 @@ public class Scene2Loader {
             }
         }
 
+        float[] jsAnchor = new float[]{0.5f,0.5f};
         //set metadata for nodes if any
         if (data != null) {
-            JsonValue jsPos = data.get("bounds");
+            JsonValue jsPos = data.get("position");
             if (jsPos != null) {
-                node.setPosition(jsPos.getFloat(0), jsPos.getFloat(1));
+                node.moveBy(jsPos.getFloat(0), jsPos.getFloat(1));
             }
             JsonValue jsSize = data.get("size");
             if (jsSize != null) {
                 node.setSize(jsSize.getFloat(0), jsSize.getFloat(1));
             }
-            JsonValue jsAnchor = data.get("anchor");
-            if (jsAnchor != null) {
-                node.setOrigin(jsAnchor.getFloat(0)*node.getWidth(), jsAnchor.getFloat(1)*node.getHeight());
+            if (data.has("anchor")) {
+                jsAnchor = data.get("anchor").asFloatArray();
             }
 
-            //TODO: this seems to not do anything for polygons, so I set scale manually in the parser
             JsonValue jsScale = data.get("scale");
             if (jsScale != null) {
                 if (jsScale.size < 2) {
@@ -189,14 +190,13 @@ public class Scene2Loader {
                     scaleX *= jsScale.asFloat();
                 }
                 else{
-                    scaleY *= jsScale.getFloat(0);
-                    scaleX *= jsScale.getFloat(1);
+                    scaleX *= jsScale.getFloat(0);
+                    scaleY *= jsScale.getFloat(1);
                 }
-
             }
-            //TODO: angle seems to not cause rotation for buttons, it just stops the down texture from being drawn
+            //TODO: angle seems to not cause rotation for buttons, it just stops one of the textures from being drawn
             if (data.has("angle"))
-                node.setRotation(data.getFloat("angle"));
+                node.rotateBy(data.getFloat("angle"));
             if (data.has("visible"))
                 node.setVisible(data.getBoolean("visible"));
 
@@ -207,6 +207,8 @@ public class Scene2Loader {
 
         //fix scaling issue with respect to parent
         node.setSize(node.getWidth()*scaleX,node.getHeight()*scaleY);
+        node.setScale(scaleX, scaleY);
+        node.setOrigin(jsAnchor[0]*node.getWidth(), jsAnchor[1]*node.getHeight());
 
         //put binding into engine for constraint layout
         node.setName(name);
@@ -214,7 +216,7 @@ public class Scene2Loader {
         System.out.println("putting "+name+" into manager");
 
         //Convert to group if in the node is not a group for adding children
-        if(((hasChild || layoutWidget !=null) && !(node instanceof Group))){
+        if(((hasChild || layoutWidget !=null) && (!(node instanceof Group) || node instanceof ScrollPane))){
             Group g = new Group();
             g.addActor(node);
             g.setSize(node.getWidth(), node.getHeight());
@@ -241,6 +243,7 @@ public class Scene2Loader {
                 }
             }
         }
+        parent.addActor(node);
 
         // perform the layout manager parses if any
         if (layout!=null && layout.has("x_anchor") && parent instanceof AnchoredLayout) {

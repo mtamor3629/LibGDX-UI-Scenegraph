@@ -44,6 +44,7 @@ public class PolygonNode extends TexturedNode{
         shape = new Poly2(verts, indices);
         texture = t;
         region = shape.makePolyRegion(new TextureRegion(t));
+        setSize(shape.getBounds().width, shape.getBounds().height);
         //might be able to use this to draw a fringe
         // PE = new PathExtruder(verts, true);
     }
@@ -54,14 +55,25 @@ public class PolygonNode extends TexturedNode{
         region = shape.makePolyRegion(new TextureRegion(t));
     }
 
+    /**
+     * Update the polygon that this node represents
+     * @param verts vertices of this PolygonNode
+     * @param indices indices from triangulation of this PolygonNode
+     */
     public void setShape(float[] verts, short[] indices){
         shape = new Poly2(verts, indices);
         region = shape.makePolyRegion(new TextureRegion(texture));
+        setSize(shape.getBounds().width*getScaleX(), shape.getBounds().height*getScaleY());
     }
 
+    /**
+     * Update the polygon that this node represents
+     * @param newPoly the new polygon
+     */
     public void setShape(Poly2 newPoly){
         shape = newPoly;
         region = shape.makePolyRegion(new TextureRegion(texture));
+        setSize(shape.getBounds().width*getScaleX(), shape.getBounds().height*getScaleY());
     }
 
     /**
@@ -74,9 +86,8 @@ public class PolygonNode extends TexturedNode{
     public void draw (Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
         batch.setColor(getColor());
-        //TODO: changing origin seems not to do anything
-        //TODO: make textures tile to fill a larger region
-        ((PolygonSpriteBatch) batch).draw(region, getX(), getY(), getOriginX(), getOriginY(),
+        //TODO: fix origin
+        ((PolygonSpriteBatch) batch).draw(region, getX(), getY(), getScaleX()*getOriginX(), getScaleY()*getOriginY(),
                 region.getRegion().getRegionWidth(), region.getRegion().getRegionHeight(),
                 getScaleX(), getScaleY(), getRotation());
         //if fringe width is below a small epsilon, don't waste time calculating/drawing it

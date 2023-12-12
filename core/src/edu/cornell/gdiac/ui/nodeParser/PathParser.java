@@ -19,7 +19,6 @@ import edu.cornell.gdiac.ui.nodes.TexturedNode;
 public class PathParser implements NodeParser{
     @Override
     public String getTypeKey() { return "Path"; }
-    //rather than implementing from scratch, use Shapes from 3152 demo
 
     @Override
     public Actor process(JsonValue json, AssetDirectory assetDirectory, float scaleX, float scaleY, Actor parent) {
@@ -35,7 +34,10 @@ public class PathParser implements NodeParser{
         boolean closed;
 
         Texture t;
-        if (data.has("texture")) t = assetDirectory.getEntry(data.getString("texture"), Texture.class);
+        if (data.has("texture")) {
+            t = assetDirectory.getEntry(data.getString("texture"), Texture.class);
+            t.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        }
         else t = TexturedNode.defaultTexture();
 
         if(path != null && path.isArray()) {
@@ -62,8 +64,7 @@ public class PathParser implements NodeParser{
             closed = true;
         }
         //PathNode constructor handles illegal joint/endcap strings, so we don't have to do so here
-        PathNode node = t == null ? new PathNode(verts, corners, closed, stroke, joint, endcap, fringe, stencil)
-                : new PathNode(t, verts, corners, closed, stroke, joint, endcap, fringe, stencil);
+        PathNode node = new PathNode(t, verts, corners, closed, stroke, joint, endcap, fringe, stencil);
 
         //TexturedNode data
         String flip = data.getString("flip", "");

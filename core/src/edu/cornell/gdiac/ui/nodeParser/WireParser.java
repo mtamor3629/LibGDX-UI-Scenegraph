@@ -27,6 +27,7 @@ public class WireParser implements NodeParser{
         JsonValue poly = data.get("polygon");
         JsonValue wire = data.get("wireframe");
         String traversal = data.getString("traversal", "");
+        PT.clear();
 
         short[] wireframe;
         if (wire != null) wireframe = wire.asShortArray();
@@ -34,11 +35,12 @@ public class WireParser implements NodeParser{
 
         float[] verts = null;
         short[] indices = null;
-        Texture t = null;
 
+        Texture t;
         if (data.has("texture")){
             t = assetDirectory.getEntry(data.getString("texture"), Texture.class);
             //if polygon is missing, use a rectangle the size of the texture
+            t.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
             if (poly == null) verts = new float[]{0, 0, t.getWidth(), 0, t.getWidth(), t.getHeight(), 0, t.getHeight()};
         } else t = TexturedNode.defaultTexture();
 

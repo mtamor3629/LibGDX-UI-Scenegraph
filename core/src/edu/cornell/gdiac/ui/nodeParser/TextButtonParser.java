@@ -43,9 +43,11 @@ public class TextButtonParser implements NodeParser{
             tStyle.down = skin.newDrawable(tStyle.up, 0.7f, 0.7f, 0.7f, 1);
             skin.dispose();
         }
-        BitmapFont b = assetDirectory.getEntry("gyparody",BitmapFont.class);
-        b.getData().setScale(scaleX,scaleY);
-        tStyle.font = b;
+        if (data.has("font")) {
+            BitmapFont b = assetDirectory.getEntry(data.getString("font"), BitmapFont.class);
+            b.getData().setScale(scaleX, scaleY);
+            tStyle.font = b;
+        }
         node = new TextButton(data.getString("text"),tStyle);
         return node;
     }
