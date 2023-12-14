@@ -59,7 +59,8 @@ public class WireParser implements NodeParser{
             String triangulator = poly.getString("triangulator");
             if (verts != null && indices == null) {
                 //if verts are null, we can't triangulate them. if indices are not null, we want to use them as-is.
-                if (triangulator.equals("monotone")) indices = new short[0];//what to do in this case? seems like LibGDX doesn't support a monotone triangulator
+                //TODO: what to do in this case? seems like LibGDX doesn't support a monotone triangulator
+                if (triangulator.equals("monotone")) indices = new short[0];
                 else if (triangulator.equals("delaunay")) indices = DT.computeTriangles(verts, false).toArray();
                 else if (triangulator.equals("earclip")) {
                     PT.set(verts);
@@ -83,14 +84,14 @@ public class WireParser implements NodeParser{
 
         WireNode node = new WireNode(t, verts, indices, wireframe, traversal, fringe);
 
-        //TexturedNode data
-        String flip = data.getString("flip", "");
-        if (flip.equals("horizontal")) node.setScaleX(-node.getScaleX());
-        else if (flip.equals("vertical")) node.setScaleY(-node.getScaleY());
-        else if (flip.equals("both")) {
-            node.setScaleX(-node.getScaleX());
-            node.setScaleY(-node.getScaleY());
-        }
+//        //TexturedNode data
+//        String flip = data.getString("flip", "");
+//        if (flip.equals("horizontal")) node.setScaleX(-node.getScaleX());
+//        else if (flip.equals("vertical")) node.setScaleY(-node.getScaleY());
+//        else if (flip.equals("both")) {
+//            node.setScaleX(-node.getScaleX());
+//            node.setScaleY(-node.getScaleY());
+//        }
         //TODO: handle blending, gradients, and absolute coordinates, fix flip
         return node;
     }

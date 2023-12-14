@@ -58,8 +58,8 @@ public class ScrollPaneParser implements NodeParser{
         }
 
         Group content = new Group();
-        //TODO: what size is good?
-        content.setSize(4000, 4000);
+        //TODO: What size is good? I set 8000 x 8000 to accommodate for 8k monitors
+        content.setSize(8000, 8000);
         content.setPosition(x, y);
         content.setOrigin(w*0.5f, h*0.5f);
         JsonValue children = json.get("children");

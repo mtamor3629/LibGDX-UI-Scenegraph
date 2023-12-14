@@ -24,7 +24,7 @@ public class PathParser implements NodeParser{
     public Actor process(JsonValue json, AssetDirectory assetDirectory, float scaleX, float scaleY, Actor parent) {
         JsonValue data = json.get("data");
         JsonValue path = data.get("path");
-        float stroke = data.getFloat("stroke", /*what should the default stroke width be?*/1);
+        float stroke = data.getFloat("stroke", /*what should the default stroke width be?*/5);
         String joint = data.getString("joint");
         String endcap = data.getString("endcap");
         float fringe = data.getFloat("fringe", 0);
@@ -66,14 +66,14 @@ public class PathParser implements NodeParser{
         //PathNode constructor handles illegal joint/endcap strings, so we don't have to do so here
         PathNode node = new PathNode(t, verts, corners, closed, stroke, joint, endcap, fringe, stencil);
 
-        //TexturedNode data
-        String flip = data.getString("flip", "");
-        if (flip.equals("horizontal")) node.setScaleX(-node.getScaleX());
-        else if (flip.equals("vertical")) node.setScaleY(-node.getScaleY());
-        else if (flip.equals("both")) {
-            node.setScaleX(-node.getScaleX());
-            node.setScaleY(-node.getScaleY());
-        }
+//        //TexturedNode data
+//        String flip = data.getString("flip", "");
+//        if (flip.equals("horizontal")) node.setScaleX(-node.getScaleX());
+//        else if (flip.equals("vertical")) node.setScaleY(-node.getScaleY());
+//        else if (flip.equals("both")) {
+//            node.setScaleX(-node.getScaleX());
+//            node.setScaleY(-node.getScaleY());
+//        }
         //TODO: handle blending, gradients, and absolute coordinates, fix flip
         return node;
     }

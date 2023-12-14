@@ -213,12 +213,13 @@ public class PathNode extends TexturedNode {
     public void draw(Batch batch, float parentAlpha){
         super.draw(batch, parentAlpha);
         batch.setColor(getColor());
-        //TODO: fix origin
+        //TODO: fix origin. should be possible when CUSpriteBatch is fixed
         ((PolygonSpriteBatch) batch).draw(region, getX(), getY(), getScaleX()*getOriginX(), getScaleY()*getOriginY(),
                 region.getRegion().getRegionWidth(), region.getRegion().getRegionHeight(),
                 getScaleX(), getScaleY(), getRotation());
         //if fringe width is below a small epsilon, don't waste time calculating/drawing it
         if(fringe <= 0.0001) return;
-        //TODO: use path extruder to compute fringe and draw it. How can I make it fade out?
+        //TODO: use path extruder (CUSpriteBatch when fixed) to compute fringe and draw it. How can I make it fade out?
+        //TODO: stenciling. should be possible when CUSpriteBatch is fixed
     }
 }

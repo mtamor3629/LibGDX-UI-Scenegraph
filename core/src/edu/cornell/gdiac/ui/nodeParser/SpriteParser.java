@@ -26,14 +26,14 @@ public class SpriteParser implements NodeParser{
         SpriteNode node = new SpriteNode(t, span, cols, frame);
         node.setSize(t.getWidth()/cols,t.getHeight()*cols/span);
 
-        //TexturedNode data
-        String flip = data.getString("flip", "");
-        if (flip.equals("horizontal")) node.setWidth(-node.getWidth());
-        else if (flip.equals("vertical")) node.setHeight(-node.getHeight());
-        else if (flip.equals("both")) {
-            node.setWidth(-node.getWidth());
-            node.setHeight(-node.getHeight());
-        }
+//        //TexturedNode data
+//        String flip = data.getString("flip", "");
+//        if (flip.equals("horizontal")) node.setWidth(-node.getWidth());
+//        else if (flip.equals("vertical")) node.setHeight(-node.getHeight());
+//        else if (flip.equals("both")) {
+//            node.setWidth(-node.getWidth());
+//            node.setHeight(-node.getHeight());
+//        }
         //TODO: handle blending, gradients, and absolute coordinates, fix flip
         return node;
     }

@@ -153,10 +153,10 @@ public class WireNode extends TexturedNode {
         batch.setColor(getColor());
         for (Path2 segment : wireframe) {
             PE.set(segment);
-            //TODO: what should the stroke width be? Also, recalculating every time might(?) be too slow
+            //TODO: recalculating every frame might be too slow for practical use
             PE.calculate(stroke);
             region = PE.getPolygon().makePolyRegion(new TextureRegion(texture));
-            //TODO: fix origin
+            //TODO: fix origin. should be possible when CUSpriteBatch is fixed
             ((PolygonSpriteBatch) batch).draw(region, getX(), getY(), getScaleX()*getOriginX(), getScaleY()*getOriginY(),
                    region.getRegion().getRegionWidth(), region.getRegion().getRegionHeight(),
                     getScaleX(), getScaleY(), getRotation());

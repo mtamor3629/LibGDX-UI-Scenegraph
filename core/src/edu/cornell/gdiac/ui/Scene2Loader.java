@@ -61,6 +61,7 @@ public class Scene2Loader {
         parsers.add(new PathParser());
         parsers.add(new WireParser());
         parsers.add(new ScrollPaneParser(this));
+        parsers.add(new ListParser(this));
 
         widgetList = new HashMap<>();
         manager = new ScriptEngineManager();

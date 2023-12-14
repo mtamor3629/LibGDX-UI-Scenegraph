@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.DelaunayTriangulator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.math.PolyTriangulator;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
@@ -65,7 +66,8 @@ public class PolyParser implements NodeParser{
             String triangulator = poly.getString("triangulator");
             if (verts != null && indices == null) {
                 //if verts are null, we can't triangulate them. if indices are not null, we want to use them as-is.
-                if (triangulator.equals("monotone")) indices = new short[0];//what to do in this case? seems like LibGDX doesn't support a monotone triangulator
+                //TODO: what to do in this case? seems like LibGDX doesn't support a monotone triangulator
+                if (triangulator.equals("monotone")) indices = new short[0];
                 else if (triangulator.equals("delaunay")) indices = DT.computeTriangles(verts, false).toArray();
                 else if (triangulator.equals("earclip")) {
                     PT.set(verts);
@@ -90,15 +92,27 @@ public class PolyParser implements NodeParser{
 
         node = new PolygonNode(t, verts, indices, fringe);
 
-        //TexturedNode data
-        String flip = data.getString("flip", "");
-        if (flip.equals("horizontal")) node.setScaleX(-node.getScaleX());
-        else if (flip.equals("vertical")) node.setScaleY(-node.getScaleY());
-        else if (flip.equals("both")) {
-            node.setScaleX(-node.getScaleX());
-            node.setScaleY(-node.getScaleY());
-        }
+//        //TexturedNode data
+//        String flip = data.getString("flip", "");
+//        if (flip.equals("horizontal")) node.setScaleX(-node.getScaleX());
+//        else if (flip.equals("vertical")) node.setScaleY(-node.getScaleY());
+//        else if (flip.equals("both")) {
+//            node.setScaleX(-node.getScaleX());
+//            node.setScaleY(-node.getScaleY());
+//        }
         //TODO: handle blending, gradients, and absolute coordinates, fix flip
+
+        //below: failed attempt at using groups to implement rotation
+//        node.setScale(scaleX, scaleY);
+//        node.setSize(node.getWidth()*scaleX, node.getHeight()*scaleY);
+//        JsonValue color = data.get("color");
+//        if (color!=null)
+//            node.setColor(new Color(color.getInt(0)/255f, color.getInt(1)/255f, color.getInt(2)/255f, color.getInt(3)/255f));
+//        Group out = new Group();
+//        node.setFillParent(true);
+//        out.addActor(node);
+//        out.setSize(node.getWidth(), node.getHeight());
+
         return node;
     }
 }

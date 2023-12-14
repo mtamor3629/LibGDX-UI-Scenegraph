@@ -143,7 +143,9 @@
 									"triangulator" : "earclip"
 								},
 								"color" : [255,0,255,255],
-								"scale" : 2
+								"anchor" : [0,0],
+								"scale" : 2,
+								"angle" : 0
 							},
 							"layout" : {
 								"x_anchor" : "right",
@@ -189,6 +191,24 @@
 							"layout" : {
 								"x_anchor" : "center",
 								"y_anchor" : "bottom"
+							}
+						},
+						"list" : {
+							"type" : "List",
+							"format" : {
+								"type" : "Anchored"
+							},
+							"data" :  {
+								"size" : [200, 200],
+								"font_color" : [0,0,0,255],
+								"selected_font_color" : [255,255,255,255],
+								"font" : "gyparody",
+								"selected" : 1,
+								"items" : ["option 1", "option 2", "option 3"]
+							},
+							"layout" : {
+								"x_anchor" : "center",
+								"y_anchor" : "top"
 							}
 						}
 					},

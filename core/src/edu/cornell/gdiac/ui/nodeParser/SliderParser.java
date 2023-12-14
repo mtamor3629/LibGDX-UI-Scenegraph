@@ -74,7 +74,7 @@ public class SliderParser implements NodeParser{
         if (data.has("knob")){
             Group node = new Group();
             try {
-                Button knob = (Button) loader.parseNode(data.get("knob").get("up"),"", (Group)node ,scaleX,scaleY);
+                Button knob = (Button) loader.parseNode(data.get("knob").get(0),"", (Group)node ,scaleX,scaleY);
                 sStyle.knob = knob.getStyle().up;
                 sStyle.knobDown = knob.getStyle().down;
             } catch (ScriptException e) {
