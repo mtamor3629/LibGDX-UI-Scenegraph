@@ -25,8 +25,8 @@ public class NinePatchParser implements NodeParser{
         if (data.has("interior")){
             leftB = data.get("interior").getInt(0);
             botB = data.get("interior").getInt(1);
-            width = data.get("interiot").getInt(2);
-            height = data.get("interiot").getInt(3);
+            width = data.get("interior").getInt(2);
+            height = data.get("interior").getInt(3);
         } else {
             leftB = t.getWidth()/2;
             botB = t.getHeight()/2;
