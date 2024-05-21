@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import edu.cornell.gdiac.render.CUSpriteBatch;
 import edu.cornell.gdiac.ui.Scene2Loader;
 import edu.cornell.gdiac.ui.assets.AssetDirectory;
 
@@ -22,7 +23,7 @@ import javax.script.*;
 //import com.badlogic.gdx.graphics.g2d.Free
 
 public class MyGdxGame extends ApplicationAdapter {
-	PolygonSpriteBatch batch;
+	CUSpriteBatch batch;
 	Texture img;
 	AssetDirectory assets;
 	Stage stage;
@@ -37,7 +38,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		JsonReader reader = new JsonReader();
 		/* Parse the scene2d layout */
 		JsonValue json = reader.parse(Gdx.files.internal("assets.json"));
-		batch = new PolygonSpriteBatch();
+		batch = new CUSpriteBatch(4000, null);
 		stage = new Stage(
 				new ScalingViewport(Scaling.stretch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new OrthographicCamera()),
 				batch);

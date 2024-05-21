@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
-import sun.tools.jconsole.Tab;
 
 /**
  * This class represents a grid layout for Nodes. The Grid Layout uses a Table to put elements in a grid.

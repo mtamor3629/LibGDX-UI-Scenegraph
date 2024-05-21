@@ -1,22 +1,20 @@
 package edu.cornell.gdiac.ui.nodes;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.Poly2;
+import edu.cornell.gdiac.render.CUSpriteBatch;
 
 /**
  * A simple polygon Actor to be used along with the LibGDX Scene2D scenegraph
+ * Only usable with CUSpriteBatch
  * @author Miguel Amor
  * @date 12/14/2023
  */
 public class PolygonNode extends TexturedNode{
     private float fringe;
     private Poly2 shape;
-    private PolygonRegion region;
-    private PathExtruder PE;
 
     /**
      * Initialize with an empty Texture and TextureRegion
@@ -27,7 +25,6 @@ public class PolygonNode extends TexturedNode{
     public PolygonNode(float[] verts, short[] indices, float fringe){
         this.fringe = fringe;
         shape = new Poly2(verts, indices);
-        region = shape.makePolyRegion(new TextureRegion());
         //might be able to use this to draw a fringe
         // PE = new PathExtruder(verts, true);
     }
@@ -43,7 +40,6 @@ public class PolygonNode extends TexturedNode{
         this.fringe = fringe;
         shape = new Poly2(verts, indices);
         texture = t;
-        region = shape.makePolyRegion(new TextureRegion(t));
         setSize(shape.getBounds().width, shape.getBounds().height);
         //might be able to use this to draw a fringe
         // PE = new PathExtruder(verts, true);
@@ -52,7 +48,6 @@ public class PolygonNode extends TexturedNode{
     @Override
     public void setTexture(Texture t){
         texture = t;
-        region = shape.makePolyRegion(new TextureRegion(t));
     }
 
     /**
@@ -62,7 +57,6 @@ public class PolygonNode extends TexturedNode{
      */
     public void setShape(float[] verts, short[] indices){
         shape = new Poly2(verts, indices);
-        region = shape.makePolyRegion(new TextureRegion(texture));
         setSize(shape.getBounds().width*getScaleX(), shape.getBounds().height*getScaleY());
     }
 
@@ -72,7 +66,6 @@ public class PolygonNode extends TexturedNode{
      */
     public void setShape(Poly2 newPoly){
         shape = newPoly;
-        region = shape.makePolyRegion(new TextureRegion(texture));
         setSize(shape.getBounds().width*getScaleX(), shape.getBounds().height*getScaleY());
     }
 
@@ -86,12 +79,9 @@ public class PolygonNode extends TexturedNode{
     public void draw (Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
         batch.setColor(getColor());
-        //TODO: fix origin. should be possible when CUSpriteBatch is fixed
-        ((PolygonSpriteBatch) batch).draw(region, getX(), getY(), getScaleX()*getOriginX(), getScaleY()*getOriginY(),
-                region.getRegion().getRegionWidth(), region.getRegion().getRegionHeight(),
-                getScaleX(), getScaleY(), getRotation());
+        ((CUSpriteBatch) batch).draw(texture, shape, getX(), getY(), getOriginX(), getOriginY(), getScaleX(), getScaleY(), getRotation());
         //if fringe width is below a small epsilon, don't waste time calculating/drawing it
         if(fringe <= 0.0001) return;
-        //TODO: use path extruder (CUSpriteBatch when fixed) to compute fringe and draw it. How can I make it fade out?
+        //TODO: compute fringe and draw it.
     }
 }

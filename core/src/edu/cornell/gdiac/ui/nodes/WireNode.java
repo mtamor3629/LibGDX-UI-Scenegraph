@@ -2,25 +2,23 @@ package edu.cornell.gdiac.ui.nodes;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.PolygonRegion;
-import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Null;
 import edu.cornell.gdiac.math.Path2;
 import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.PathFactory;
 import edu.cornell.gdiac.math.Poly2;
+import edu.cornell.gdiac.render.CUSpriteBatch;
 
 import java.util.Arrays;
 
 /**
  * A simple wireframe Actor to be used along with the LibGDX Scene2D scenegraph
+ * Only usable with CUSpriteBatch
  * @author Miguel Amor
  * @date 12/14/2023
  */
 public class WireNode extends TexturedNode {
     private Poly2 shape;
-    private PolygonRegion region;
     private PathFactory PF = new PathFactory();
     //initialize the extruder with a dummy path
     private PathExtruder PE = new PathExtruder(new float[]{0,0},false);
@@ -73,7 +71,6 @@ public class WireNode extends TexturedNode {
     @Override
     public void setTexture(Texture t){
         texture = t;
-        region = shape.makePolyRegion(new TextureRegion(t));
         //drawable = new TextureRegionDrawable(region.getRegion());
     }
 
@@ -155,11 +152,8 @@ public class WireNode extends TexturedNode {
             PE.set(segment);
             //TODO: recalculating every frame might be too slow for practical use
             PE.calculate(stroke);
-            region = PE.getPolygon().makePolyRegion(new TextureRegion(texture));
-            //TODO: fix origin. should be possible when CUSpriteBatch is fixed
-            ((PolygonSpriteBatch) batch).draw(region, getX(), getY(), getScaleX()*getOriginX(), getScaleY()*getOriginY(),
-                   region.getRegion().getRegionWidth(), region.getRegion().getRegionHeight(),
-                    getScaleX(), getScaleY(), getRotation());
+            ((CUSpriteBatch) batch).draw(texture, PE.getPolygon(), getX(), getY(), getOriginX(), getOriginY(), getScaleX(), getScaleY(), getRotation());
         }
+        //TODO: compute fringe and draw it.
     }
 }

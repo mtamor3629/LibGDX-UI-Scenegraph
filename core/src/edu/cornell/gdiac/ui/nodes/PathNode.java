@@ -3,17 +3,17 @@ package edu.cornell.gdiac.ui.nodes;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
-import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.IntSet;
 import edu.cornell.gdiac.math.Path2;
 import edu.cornell.gdiac.math.PathExtruder;
 import edu.cornell.gdiac.math.Poly2;
+import edu.cornell.gdiac.render.CUSpriteBatch;
 
 /**
  * A simple polygon Actor to be used along with the LibGDX Scene2D scenegraph.
  * Although fringe width and whether to stencil are required by the constructor,
  * the corresponding features are not yet implemented.
+ * Only usable with CUSpriteBatch
  * @author Miguel Amor
  * @date 12/14/2023
  */
@@ -34,7 +34,6 @@ public class PathNode extends TexturedNode {
 
     //what we need for drawing
     private Poly2 extruded;
-    private PolygonRegion region;
 
     /**
      * Initialize with an empty Texture and TextureRegion
@@ -55,13 +54,13 @@ public class PathNode extends TexturedNode {
 
         if (joint.equals("mitre")) this.joint = Poly2.Joint.MITRE;
         else if (joint.equals("round")) this.joint = Poly2.Joint.ROUND;
-            //default to square if string is illegal
-            //what's the difference between square and bevel joints (if any)?
+        //default to square if string is illegal
+        //what's the difference between square and bevel joints (if any)?
         else this.joint = Poly2.Joint.SQUARE;
 
         if (endcap.equals("round")) this.endcap = Poly2.EndCap.ROUND;
         else if (endcap.equals("square")) this.endcap = Poly2.EndCap.SQUARE;
-            //default to butt (no endcap) if string is illegal
+        //default to butt (no endcap) if string is illegal
         else this.endcap = Poly2.EndCap.BUTT;
 
         this.fringe = fringe;
@@ -76,7 +75,6 @@ public class PathNode extends TexturedNode {
         PE.setJoint(this.joint);
         PE.calculate(stroke);
         extruded = PE.getPolygon();
-        region = extruded.makePolyRegion(new TextureRegion());
         setSize(extruded.getBounds().width, extruded.getBounds().height);
     }
 
@@ -121,14 +119,12 @@ public class PathNode extends TexturedNode {
         PE.setJoint(this.joint);
         PE.calculate(stroke);
         extruded = PE.getPolygon();
-        region = extruded.makePolyRegion(new TextureRegion(t));
         setSize(extruded.getBounds().width*getScaleX(), extruded.getBounds().height*getScaleY());
     }
 
     @Override
     public void setTexture(Texture t){
         super.setTexture(t);
-        region = extruded.makePolyRegion(new TextureRegion(t));
     }
 
     /**
@@ -140,7 +136,6 @@ public class PathNode extends TexturedNode {
         PE.set(path);
         PE.calculate(stroke);
         extruded = PE.getPolygon();
-        region = extruded.makePolyRegion(new TextureRegion(texture));
         setSize(extruded.getBounds().width*getScaleX(), extruded.getBounds().height*getScaleY());
     }
 
@@ -162,7 +157,6 @@ public class PathNode extends TexturedNode {
         PE.set(path);
         PE.calculate(stroke);
         extruded = PE.getPolygon();
-        region = extruded.makePolyRegion(new TextureRegion(texture));
         setSize(extruded.getBounds().width, extruded.getBounds().height);
     }
 
@@ -174,7 +168,6 @@ public class PathNode extends TexturedNode {
         this.stroke = stroke;
         PE.calculate(stroke);
         extruded = PE.getPolygon();
-        region = extruded.makePolyRegion(new TextureRegion(texture));
     }
 
     /**
@@ -213,13 +206,10 @@ public class PathNode extends TexturedNode {
     public void draw(Batch batch, float parentAlpha){
         super.draw(batch, parentAlpha);
         batch.setColor(getColor());
-        //TODO: fix origin. should be possible when CUSpriteBatch is fixed
-        ((PolygonSpriteBatch) batch).draw(region, getX(), getY(), getScaleX()*getOriginX(), getScaleY()*getOriginY(),
-                region.getRegion().getRegionWidth(), region.getRegion().getRegionHeight(),
-                getScaleX(), getScaleY(), getRotation());
+        ((CUSpriteBatch) batch).draw(texture, extruded, getX(), getY(), getOriginX(), getOriginY(), getScaleX(), getScaleY(), getRotation());
         //if fringe width is below a small epsilon, don't waste time calculating/drawing it
         if(fringe <= 0.0001) return;
-        //TODO: use path extruder (CUSpriteBatch when fixed) to compute fringe and draw it. How can I make it fade out?
+        //TODO: compute fringe and draw it.
         //TODO: stenciling. should be possible when CUSpriteBatch is fixed
     }
 }
